@@ -1,0 +1,201 @@
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font-sans)}
+.app{background:var(--color-background-tertiary);min-height:600px;border-radius:var(--border-radius-lg);overflow:hidden}
+.topbar{background:#0f2044;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.logo-box{width:36px;height:36px;background:#f0b429;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-box svg{width:20px;height:20px;fill:#0f2044}
+.brand-text{color:#fff;font-size:15px;font-weight:500}
+.brand-sub{color:rgba(255,255,255,0.5);font-size:11px}
+.hero-strip{background:#1a3560;padding:20px 20px 28px}
+.hero-strip h1{color:#fff;font-size:20px;font-weight:500;margin-bottom:4px}
+.hero-strip p{color:rgba(255,255,255,0.55);font-size:13px}
+.search-float{margin:-18px 16px 0;background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:14px 16px;display:flex;gap:10px;align-items:center}
+.search-float input{flex:1;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:14px;color:var(--color-text-primary);background:var(--color-background-secondary);outline:none}
+.search-float input:focus{border-color:#1a3560}
+.search-float button{background:#0f2044;color:#fff;border:none;border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
+.search-float button:hover{opacity:0.85}
+.body{padding:16px}
+.profile-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden;margin-bottom:14px}
+.profile-top{background:#0f2044;padding:16px 18px;display:flex;align-items:center;gap:14px}
+.avatar{width:52px;height:52px;border-radius:50%;background:#f0b429;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:#0f2044;flex-shrink:0}
+.pname{color:#fff;font-size:17px;font-weight:500}
+.pmeta{color:rgba(255,255,255,0.55);font-size:12px;margin-top:2px}
+.pbadge{display:inline-block;margin-top:6px;background:rgba(240,180,41,0.2);border:1px solid rgba(240,180,41,0.35);color:#ffd166;font-size:11px;padding:2px 10px;border-radius:99px}
+.big-score{margin-left:auto;text-align:center}
+.big-num{font-size:42px;font-weight:500;color:#f0b429;line-height:1}
+.big-label{color:rgba(255,255,255,0.45);font-size:11px;margin-top:2px}
+.cats{padding:14px 18px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.cat{text-align:center}
+.clabel{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px}
+.cbar-bg{height:4px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden;margin-bottom:5px}
+.cbar{height:100%;border-radius:99px}
+.cscore{font-size:17px;font-weight:500}
+.section-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.lb-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:14px 16px;margin-bottom:14px}
+.tabs{display:flex;gap:6px;margin-bottom:12px}
+.tab{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 12px;font-size:12px;cursor:pointer;color:var(--color-text-secondary)}
+.tab.on{background:#0f2044;border-color:#0f2044;color:#fff}
+.lb-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--border-radius-md);cursor:default}
+.lb-row:hover{background:var(--color-background-secondary)}
+.lb-row.hl{background:#faeeda;border:1px solid #f0b429}
+.rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.r1{background:#ffd700;color:#7a5c00}
+.r2{background:#c0c0c0;color:#444}
+.r3{background:#cd7f32;color:#fff}
+.rn{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)}
+.lname{flex:1;font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.ldept{font-size:11px;color:var(--color-text-secondary)}
+.lbar{width:60px;height:4px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden}
+.lbar-fill{height:100%;background:#1a3560;border-radius:99px}
+.lsc{font-size:14px;font-weight:500;min-width:32px;text-align:right}
+.dept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.dept-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:12px 14px}
+.dname{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
+.dscore{font-size:20px;font-weight:500}
+.dcount{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.hidden{display:none}
+</style>
+
+<div class="app">
+  <div class="topbar">
+    <div class="logo-box"><svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>
+    <div><div class="brand-text">Financial Score</div><div class="brand-sub">ตรวจสอบคะแนนการเงิน</div></div>
+  </div>
+  <div class="hero-strip">
+    <h1>คะแนนสุขภาพการเงินของคุณ</h1>
+    <p>กรอกรหัสพนักงานเพื่อดูคะแนนและอันดับ</p>
+  </div>
+  <div class="search-float">
+    <input id="sq" placeholder="รหัสพนักงาน เช่น EMP003" onkeydown="if(event.key==='Enter')doSearch()">
+    <button onclick="doSearch()">ค้นหา</button>
+  </div>
+
+  <div class="body">
+    <div id="profArea" class="hidden">
+      <div class="profile-card">
+        <div class="profile-top">
+          <div class="avatar" id="av"></div>
+          <div>
+            <div class="pname" id="pname"></div>
+            <div class="pmeta" id="pmeta"></div>
+            <div class="pbadge" id="pbadge"></div>
+          </div>
+          <div class="big-score">
+            <div class="big-num" id="bignum"></div>
+            <div class="big-label">/ 100</div>
+          </div>
+        </div>
+        <div class="cats" id="catsDiv"></div>
+      </div>
+    </div>
+
+    <div class="lb-card">
+      <div class="section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-text-primary)"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
+        Leaderboard
+      </div>
+      <div class="tabs">
+        <div class="tab on" onclick="setTab(this,'')">ทั้งหมด</div>
+        <div class="tab" onclick="setTab(this,'การเงิน')">การเงิน</div>
+        <div class="tab" onclick="setTab(this,'IT')">IT</div>
+        <div class="tab" onclick="setTab(this,'HR')">HR</div>
+        <div class="tab" onclick="setTab(this,'การตลาด')">การตลาด</div>
+      </div>
+      <div id="lbDiv"></div>
+    </div>
+
+    <div class="lb-card">
+      <div class="section-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-text-primary)"><path d="M12 7V3H2v18h20V7H12zm-2 12H4v-2h6v2zm0-4H4v-2h6v2zm0-4H4V9h6v2zm0-4H4V5h6v2zm10 12h-8v-2h8v2zm0-4h-8v-2h8v2zm0-4h-8V9h8v2z"/></svg>
+        สรุปตามแผนก
+      </div>
+      <div class="dept-grid" id="deptDiv"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const DATA = [
+  {id:'EMP001',name:'สมชาย ใจดี',dept:'การเงิน',s:80,i:65,sp:70,p:75,k:85},
+  {id:'EMP002',name:'สมหญิง รักงาน',dept:'HR',s:90,i:70,sp:85,p:80,k:75},
+  {id:'EMP003',name:'มานะ พัฒนา',dept:'IT',s:60,i:80,sp:55,p:65,k:90},
+  {id:'EMP004',name:'วิไล สุขใจ',dept:'การตลาด',s:75,i:60,sp:80,p:70,k:65},
+  {id:'EMP005',name:'ประสิทธิ์ มั่นคง',dept:'การเงิน',s:85,i:75,sp:65,p:85,k:80},
+  {id:'EMP006',name:'นภา รุ่งเรือง',dept:'การเงิน',s:55,i:45,sp:60,p:50,k:70},
+  {id:'EMP007',name:'ธีรพล สำเร็จ',dept:'IT',s:92,i:88,sp:78,p:90,k:85},
+  {id:'EMP008',name:'กมลา ดีงาม',dept:'HR',s:70,i:65,sp:75,p:68,k:72},
+  {id:'EMP009',name:'วรพล เก่งกาจ',dept:'การตลาด',s:40,i:35,sp:55,p:45,k:50},
+  {id:'EMP010',name:'ปรีชา วิสัย',dept:'การเงิน',s:78,i:72,sp:68,p:80,k:76},
+];
+DATA.forEach(d=>{ d.avg = Math.round((d.s+d.i+d.sp+d.p+d.k)/5*10)/10; });
+
+const CATS=[{k:'s',l:'การออม',c:'#3b82f6'},{k:'i',l:'การลงทุน',c:'#8b5cf6'},{k:'sp',l:'การใช้จ่าย',c:'#f97316'},{k:'p',l:'การวางแผน',c:'#22c55e'},{k:'k',l:'ความรู้',c:'#f0b429'}];
+
+function scoreColor(s){ return s>=80?'#22c55e':s>=60?'#f0b429':'#ef4444'; }
+function scoreLabel(s){ return s>=80?'ดีมาก':s>=60?'ปานกลาง':'ต้องพัฒนา'; }
+function initials(n){ const p=n.trim().split(' '); return p.length>=2?p[0][0]+p[1][0]:n.slice(0,2); }
+
+let hlId='';
+let currentDept='';
+
+function doSearch(){
+  const q=document.getElementById('sq').value.trim().toLowerCase();
+  const emp=DATA.find(d=>d.id.toLowerCase()===q||d.name.toLowerCase().includes(q));
+  const pa=document.getElementById('profArea');
+  if(!emp){ pa.classList.add('hidden'); hlId=''; renderLb(); return; }
+  hlId=emp.id;
+  document.getElementById('av').textContent=initials(emp.name);
+  document.getElementById('pname').textContent=emp.name;
+  document.getElementById('pmeta').textContent=emp.dept+' · '+emp.id;
+  document.getElementById('pbadge').textContent=scoreLabel(emp.avg);
+  document.getElementById('bignum').textContent=emp.avg;
+  document.getElementById('bignum').style.color=scoreColor(emp.avg);
+  document.getElementById('catsDiv').innerHTML=CATS.map(c=>`
+    <div class="cat">
+      <div class="clabel">${c.l}</div>
+      <div class="cbar-bg"><div class="cbar" style="width:${emp[c.k]}%;background:${c.c}"></div></div>
+      <div class="cscore" style="color:${c.c}">${emp[c.k]}</div>
+    </div>`).join('');
+  pa.classList.remove('hidden');
+  renderLb();
+}
+
+function setTab(el,dept){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  currentDept=dept;
+  renderLb();
+}
+
+function renderLb(){
+  let data=currentDept?DATA.filter(d=>d.dept===currentDept):[...DATA];
+  data.sort((a,b)=>b.avg-a.avg);
+  document.getElementById('lbDiv').innerHTML=data.map((d,i)=>{
+    const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
+    const hl=d.id===hlId?' hl':'';
+    return `<div class="lb-row${hl}">
+      <div class="rank ${rc}">${i+1}</div>
+      <div style="flex:1"><div class="lname">${d.name}</div><div class="ldept">${d.dept}</div></div>
+      <div class="lbar"><div class="lbar-fill" style="width:${d.avg}%"></div></div>
+      <div class="lsc" style="color:${scoreColor(d.avg)}">${d.avg}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderDept(){
+  const depts=[...new Set(DATA.map(d=>d.dept))];
+  document.getElementById('deptDiv').innerHTML=depts.map(dept=>{
+    const m=DATA.filter(d=>d.dept===dept);
+    const avg=Math.round(m.reduce((s,d)=>s+d.avg,0)/m.length*10)/10;
+    return `<div class="dept-card">
+      <div class="dname">${dept}</div>
+      <div class="dscore" style="color:${scoreColor(avg)}">${avg}</div>
+      <div class="dcount">${m.length} คน · ${scoreLabel(avg)}</div>
+    </div>`;
+  }).join('');
+}
+
+renderLb();
+renderDept();
+</script>
