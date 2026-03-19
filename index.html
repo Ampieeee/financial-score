@@ -1,201 +1,578 @@
-
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wealth Challenge 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:var(--font-sans)}
-.app{background:var(--color-background-tertiary);min-height:600px;border-radius:var(--border-radius-lg);overflow:hidden}
-.topbar{background:#0f2044;padding:16px 20px;display:flex;align-items:center;gap:12px}
-.logo-box{width:36px;height:36px;background:#f0b429;border-radius:8px;display:flex;align-items:center;justify-content:center}
-.logo-box svg{width:20px;height:20px;fill:#0f2044}
-.brand-text{color:#fff;font-size:15px;font-weight:500}
-.brand-sub{color:rgba(255,255,255,0.5);font-size:11px}
-.hero-strip{background:#1a3560;padding:20px 20px 28px}
-.hero-strip h1{color:#fff;font-size:20px;font-weight:500;margin-bottom:4px}
-.hero-strip p{color:rgba(255,255,255,0.55);font-size:13px}
-.search-float{margin:-18px 16px 0;background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:14px 16px;display:flex;gap:10px;align-items:center}
-.search-float input{flex:1;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 12px;font-size:14px;color:var(--color-text-primary);background:var(--color-background-secondary);outline:none}
-.search-float input:focus{border-color:#1a3560}
-.search-float button{background:#0f2044;color:#fff;border:none;border-radius:var(--border-radius-md);padding:8px 16px;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap}
-.search-float button:hover{opacity:0.85}
-.body{padding:16px}
-.profile-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden;margin-bottom:14px}
-.profile-top{background:#0f2044;padding:16px 18px;display:flex;align-items:center;gap:14px}
-.avatar{width:52px;height:52px;border-radius:50%;background:#f0b429;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;color:#0f2044;flex-shrink:0}
-.pname{color:#fff;font-size:17px;font-weight:500}
-.pmeta{color:rgba(255,255,255,0.55);font-size:12px;margin-top:2px}
-.pbadge{display:inline-block;margin-top:6px;background:rgba(240,180,41,0.2);border:1px solid rgba(240,180,41,0.35);color:#ffd166;font-size:11px;padding:2px 10px;border-radius:99px}
-.big-score{margin-left:auto;text-align:center}
-.big-num{font-size:42px;font-weight:500;color:#f0b429;line-height:1}
-.big-label{color:rgba(255,255,255,0.45);font-size:11px;margin-top:2px}
-.cats{padding:14px 18px;display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.cat{text-align:center}
-.clabel{font-size:11px;color:var(--color-text-secondary);margin-bottom:6px}
-.cbar-bg{height:4px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden;margin-bottom:5px}
-.cbar{height:100%;border-radius:99px}
-.cscore{font-size:17px;font-weight:500}
-.section-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.lb-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:14px 16px;margin-bottom:14px}
-.tabs{display:flex;gap:6px;margin-bottom:12px}
-.tab{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 12px;font-size:12px;cursor:pointer;color:var(--color-text-secondary)}
-.tab.on{background:#0f2044;border-color:#0f2044;color:#fff}
-.lb-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--border-radius-md);cursor:default}
-.lb-row:hover{background:var(--color-background-secondary)}
-.lb-row.hl{background:#faeeda;border:1px solid #f0b429}
-.rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
-.r1{background:#ffd700;color:#7a5c00}
-.r2{background:#c0c0c0;color:#444}
-.r3{background:#cd7f32;color:#fff}
-.rn{background:var(--color-background-secondary);color:var(--color-text-secondary);border:0.5px solid var(--color-border-tertiary)}
-.lname{flex:1;font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.ldept{font-size:11px;color:var(--color-text-secondary)}
-.lbar{width:60px;height:4px;background:var(--color-border-tertiary);border-radius:99px;overflow:hidden}
-.lbar-fill{height:100%;background:#1a3560;border-radius:99px}
-.lsc{font-size:14px;font-weight:500;min-width:32px;text-align:right}
-.dept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.dept-card{background:var(--color-background-primary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:12px 14px}
-.dname{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px}
-.dscore{font-size:20px;font-weight:500}
-.dcount{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
-.hidden{display:none}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pink:#e8186d;--pink-lt:#fce7f3;--pink-md:#f9a8d4;
+  --yellow:#f59e0b;--yellow-lt:#fffbeb;
+  --green:#059669;--green-lt:#ecfdf5;
+  --red:#dc2626;--red-lt:#fef2f2;
+  --blue:#2563eb;--blue-lt:#eff6ff;
+  --purple:#7c3aed;--purple-lt:#f5f3ff;
+  --navy:#1a1a2e;--navy2:#16213e;
+  --bg:#f8f9fa;--card:#fff;--text:#1a1a2e;--muted:#6b7280;--border:#e5e7eb;
+}
+body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* PAGE SYSTEM */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ── HOME PAGE ── */
+.home-hero{background:var(--navy);padding:0;position:relative;overflow:hidden}
+.home-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 65% 50%,rgba(232,24,109,0.18),transparent 70%)}
+.home-inner{max-width:960px;margin:0 auto;padding:2rem 1.5rem 3rem;position:relative;z-index:2}
+.htop{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-dot{width:38px;height:38px;border-radius:10px;background:var(--pink);display:flex;align-items:center;justify-content:center}
+.brand-dot svg{width:20px;height:20px;fill:#fff}
+.bname{color:#fff;font-size:14px;font-weight:600;line-height:1.3}
+.bsub{color:rgba(255,255,255,.4);font-size:11px;margin-top:1px}
+.cd-pill{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 18px;text-align:center}
+.cd-n{font-size:38px;font-weight:700;color:var(--yellow);line-height:1;letter-spacing:-1px}
+.cd-l{color:rgba(255,255,255,.4);font-size:11px;margin-top:3px}
+.home-title{color:#fff;font-size:26px;font-weight:700;line-height:1.3;margin-top:2rem;letter-spacing:-.3px}
+.home-title em{color:var(--yellow);font-style:normal}
+.home-sub{color:rgba(255,255,255,.45);font-size:13px;margin-top:6px}
+
+.home-search-wrap{max-width:960px;margin:-20px auto 0;padding:0 1.5rem;position:relative;z-index:10}
+.home-search{background:var(--card);border-radius:14px;box-shadow:0 4px 24px rgba(26,26,46,.15);padding:1rem 1.25rem;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.home-search input{flex:1;min-width:180px;border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;font-size:14px;font-family:'Prompt',sans-serif;color:var(--text);outline:none;transition:border .2s}
+.home-search input:focus{border-color:var(--pink)}
+.home-search button{background:var(--pink);color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Prompt',sans-serif;white-space:nowrap;transition:opacity .15s}
+.home-search button:hover{opacity:.87}
+
+.home-main{max-width:960px;margin:1.5rem auto;padding:0 1.5rem 4rem}
+.err-box{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1.25rem;color:#991b1b;font-size:13px;display:none}
+
+/* Top 5 on home */
+.lb-card{background:var(--card);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:1.25rem}
+.lb-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.lb-head h3{font-size:14px;font-weight:600;color:var(--text)}
+.lb-body{padding:6px 10px}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:9px;transition:background .12s}
+.lb-row:hover{background:var(--bg)}
+.rank{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
+.r1{background:#ffd700;color:#7a5c00}.r2{background:#c0c0c0;color:#444}.r3{background:#cd7f32;color:#fff}
+.rn{background:var(--bg);color:var(--muted);border:1px solid var(--border)}
+.lb-code{flex:1;font-size:13px;font-weight:500;color:var(--text)}
+.lb-bar-w{width:70px;height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.lb-bar-f{height:100%;border-radius:99px;background:var(--pink)}
+.lb-sc{font-size:13px;font-weight:700;color:var(--pink);min-width:38px;text-align:right}
+
+/* ── DETAIL PAGE ── */
+.detail-nav{background:var(--card);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;gap:12px;height:52px;position:sticky;top:0;z-index:100}
+.back-btn{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-family:'Prompt',sans-serif;font-size:14px;font-weight:500;color:var(--text);padding:6px 10px;border-radius:8px;transition:background .15s}
+.back-btn:hover{background:var(--bg)}
+.back-btn svg{width:16px;height:16px}
+.nav-divider{width:1px;height:20px;background:var(--border)}
+.nav-title{font-size:13px;color:var(--muted);font-weight:400}
+
+.detail-main{max-width:960px;margin:1.5rem auto;padding:0 1.5rem 4rem}
+
+/* Profile card */
+.profile-card{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--border);margin-bottom:1.25rem}
+.ptop{background:var(--navy);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.av{width:52px;height:52px;border-radius:50%;background:var(--pink);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#fff;flex-shrink:0}
+.pname{color:#fff;font-size:17px;font-weight:600}
+.pmeta{color:rgba(255,255,255,.5);font-size:12px;margin-top:2px}
+.pbadge{display:inline-block;margin-top:5px;border-radius:99px;font-size:11px;padding:2px 11px;font-weight:600}
+.b-reach{background:rgba(5,150,105,.2);border:1px solid rgba(5,150,105,.35);color:#6ee7b7}
+.b-ok{background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.35);color:#fcd34d}
+.b-low{background:rgba(220,38,38,.18);border:1px solid rgba(220,38,38,.3);color:#fca5a5}
+.pdate-box{margin-left:auto;text-align:right}
+.pdate-l{color:rgba(255,255,255,.4);font-size:11px}
+.pdate-v{color:var(--yellow);font-size:13px;font-weight:500;margin-top:2px}
+
+.section{padding:1.25rem 1.5rem;border-top:1px solid var(--border)}
+.sec-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px}
+
+/* Progress */
+.prog-wrap{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+.circ-wrap{position:relative;width:88px;height:88px;flex-shrink:0}
+.circ-wrap svg{transform:rotate(-90deg)}
+.circ-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.circ-pct{font-size:19px;font-weight:700;line-height:1}
+.circ-lbl{font-size:10px;color:var(--muted);margin-top:2px}
+.prog-detail{flex:1;min-width:180px}
+.pd-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
+.pd-row span{color:var(--muted)}.pd-row strong{color:var(--text);font-weight:600}
+.bar-track{height:7px;background:var(--border);border-radius:99px;overflow:hidden;margin:5px 0 3px}
+.bar-fill{height:100%;border-radius:99px;transition:width .8s ease}
+.bar-reach{background:linear-gradient(90deg,#059669,#34d399)}
+.bar-ok{background:linear-gradient(90deg,#f59e0b,#fcd34d)}
+.bar-low{background:linear-gradient(90deg,#dc2626,#f87171)}
+.hint{display:inline-flex;align-items:center;gap:5px;border-radius:7px;padding:5px 11px;font-size:12px;font-weight:500;margin-top:7px}
+.hint-green{background:var(--green-lt);color:#065f46}
+.hint-red{background:var(--red-lt);color:#991b1b}
+
+/* Saving grid */
+.sav-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.si{border-radius:10px;padding:11px 13px;text-align:center}
+.si-lbl{font-size:11px;font-weight:600;margin-bottom:4px}
+.si-val{font-size:18px;font-weight:700}
+.si-unit{font-size:10px;opacity:.65;margin-top:2px}
+.si.coop{background:var(--blue-lt)}.si.coop .si-lbl,.si.coop .si-val{color:var(--blue)}
+.si.pvd{background:var(--purple-lt)}.si.pvd .si-lbl,.si.pvd .si-val{color:var(--purple)}
+.si.extra{background:var(--green-lt)}.si.extra .si-lbl,.si.extra .si-val{color:var(--green)}
+.si.total{background:var(--pink-lt)}.si.total .si-lbl,.si.total .si-val{color:var(--pink)}
+
+/* Tables */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:7px}
+.tbl th{background:var(--bg);color:var(--muted);font-weight:600;padding:7px 12px;text-align:center;font-size:11px;border-bottom:1px solid var(--border)}
+.tbl td{padding:7px 12px;border-bottom:1px solid var(--border);text-align:center;color:var(--text)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.sum td{font-weight:700;background:var(--bg)}
+.tbl .amt{font-weight:600;color:var(--green);text-align:right}
+
+/* Health score — simple */
+.health-card{background:var(--card);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:1.25rem}
+.health-top{padding:1.25rem 1.5rem;background:var(--navy2);display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
+.health-score-big{text-align:center;flex-shrink:0}
+.hs-num{font-size:52px;font-weight:700;line-height:1;letter-spacing:-2px}
+.hs-label{font-size:11px;color:rgba(255,255,255,.5);margin-top:3px}
+.health-info{flex:1}
+.health-info h3{color:#fff;font-size:16px;font-weight:600;margin-bottom:8px}
+.risk-badge{display:inline-flex;align-items:center;gap:7px;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600}
+.risk-great{background:rgba(5,150,105,.2);color:#6ee7b7;border:1px solid rgba(5,150,105,.3)}
+.risk-good{background:rgba(37,99,235,.2);color:#93c5fd;border:1px solid rgba(37,99,235,.3)}
+.risk-med{background:rgba(245,158,11,.2);color:#fcd34d;border:1px solid rgba(245,158,11,.3)}
+.risk-danger{background:rgba(220,38,38,.18);color:#fca5a5;border:1px solid rgba(220,38,38,.3)}
+.risk-desc{font-size:12px;color:rgba(255,255,255,.45);margin-top:8px;line-height:1.6}
+
+/* Recommendations */
+.rec-body{padding:1.25rem 1.5rem;border-top:1px solid rgba(255,255,255,.05)}
+.rec-list{display:flex;flex-direction:column;gap:9px}
+.rec-item{display:flex;gap:10px;padding:11px 13px;background:var(--bg);border-radius:10px;border-left:3px solid transparent}
+.rec-item.p-high{border-left-color:var(--red)}
+.rec-item.p-med{border-left-color:var(--yellow)}
+.rec-item.p-low{border-left-color:var(--green)}
+.rec-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.rec-t{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.rec-d{font-size:12px;color:var(--muted);line-height:1.65}
+
+/* Fun Coin */
+.fc-card{background:var(--card);border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:1.25rem}
+.fc-top{background:var(--pink);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.fc-top h3{color:#fff;font-size:14px;font-weight:600}
+.fc-tot-n{font-size:28px;font-weight:700;color:#fff;line-height:1}
+.fc-tot-l{color:rgba(255,255,255,.6);font-size:11px;margin-top:1px}
+.fc-body{padding:1.1rem 1.5rem}
+.fc-list{display:flex;flex-direction:column;gap:9px}
+.fc-row{display:flex;align-items:center;gap:10px}
+.fc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.fc-lbl{flex:1;font-size:12px;color:var(--text)}
+.fc-bar-w{width:90px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
+.fc-bar-f{height:100%;border-radius:99px}
+.fc-v{font-size:13px;font-weight:700;min-width:36px;text-align:right}
+.fc-note{margin-top:11px;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px}
+
+/* Submit buttons */
+.submit-card{background:var(--card);border-radius:14px;border:1px solid var(--border);padding:1.25rem 1.5rem;margin-bottom:1.25rem}
+.submit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.sbtn{border-radius:11px;padding:14px 16px;border:none;cursor:pointer;font-family:'Prompt',sans-serif;display:flex;align-items:center;gap:10px;text-decoration:none;transition:transform .18s,opacity .15s}
+.sbtn:hover{transform:translateY(-2px);opacity:.92}
+.sbtn.s1{background:linear-gradient(135deg,#059669,#10b981)}
+.sbtn.s2{background:linear-gradient(135deg,#e8186d,#f472b6)}
+.sb-ic{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-ic svg{width:16px;height:16px;fill:#fff}
+.sb-t{color:#fff;font-size:13px;font-weight:600;line-height:1.3}
+.sb-s{color:rgba(255,255,255,.7);font-size:11px;margin-top:2px}
+.sb-arr{color:rgba(255,255,255,.6);font-size:16px;margin-left:auto}
+
+@media(max-width:620px){
+  .home-inner,.home-search-wrap,.home-main,.detail-main{padding-left:1rem;padding-right:1rem}
+  .home-title{font-size:21px}.cd-n{font-size:30px}
+  .submit-grid{grid-template-columns:1fr}
+  .detail-nav{padding:0 1rem}
+}
 </style>
+</head>
+<body>
 
-<div class="app">
-  <div class="topbar">
-    <div class="logo-box"><svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>
-    <div><div class="brand-text">Financial Score</div><div class="brand-sub">ตรวจสอบคะแนนการเงิน</div></div>
-  </div>
-  <div class="hero-strip">
-    <h1>คะแนนสุขภาพการเงินของคุณ</h1>
-    <p>กรอกรหัสพนักงานเพื่อดูคะแนนและอันดับ</p>
-  </div>
-  <div class="search-float">
-    <input id="sq" placeholder="รหัสพนักงาน เช่น EMP003" onkeydown="if(event.key==='Enter')doSearch()">
-    <button onclick="doSearch()">ค้นหา</button>
-  </div>
-
-  <div class="body">
-    <div id="profArea" class="hidden">
-      <div class="profile-card">
-        <div class="profile-top">
-          <div class="avatar" id="av"></div>
-          <div>
-            <div class="pname" id="pname"></div>
-            <div class="pmeta" id="pmeta"></div>
-            <div class="pbadge" id="pbadge"></div>
-          </div>
-          <div class="big-score">
-            <div class="big-num" id="bignum"></div>
-            <div class="big-label">/ 100</div>
-          </div>
+<!-- ══════════════ HOME PAGE ══════════════ -->
+<div id="pageHome" class="page active">
+  <div class="home-hero">
+    <div class="home-inner">
+      <div class="htop">
+        <div class="brand">
+          <div class="brand-dot"><svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg></div>
+          <div><div class="bname">Well-being People Challenge 2026</div><div class="bsub">Wealth — ตรวจสอบสุขภาพการเงิน & Fun Coin</div></div>
         </div>
-        <div class="cats" id="catsDiv"></div>
+        <div class="cd-pill">
+          <div class="cd-n" id="cdNum">—</div>
+          <div class="cd-l">วันที่เหลือในการออม</div>
+        </div>
+      </div>
+      <div class="home-title">สวัสดี ตรวจสอบ<br><em>สุขภาพการเงิน</em>ของคุณ</div>
+      <div class="home-sub">กรอกรหัสบัตรประชาชน 13 หลัก เพื่อดูผลและความคืบหน้าการออม</div>
+    </div>
+  </div>
+
+  <div class="home-search-wrap">
+    <div class="home-search">
+      <input type="text" id="homeInput" placeholder="รหัสบัตรประชาชน 13 หลัก" maxlength="13" inputmode="numeric" onkeydown="if(event.key==='Enter')doSearch()">
+      <button onclick="doSearch()">ตรวจสอบ</button>
+    </div>
+  </div>
+
+  <div class="home-main">
+    <div id="errBox" class="err-box"></div>
+
+    <!-- Top 5 Fun Coin — หน้าหลัก -->
+    <div id="lbSection" style="display:none">
+      <div class="lb-card">
+        <div class="lb-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="var(--pink)"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
+          <h3>Top 5 — Fun Coin</h3>
+        </div>
+        <div class="lb-body" id="lbList"></div>
       </div>
     </div>
 
-    <div class="lb-card">
-      <div class="section-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-text-primary)"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2z"/></svg>
-        Leaderboard
-      </div>
-      <div class="tabs">
-        <div class="tab on" onclick="setTab(this,'')">ทั้งหมด</div>
-        <div class="tab" onclick="setTab(this,'การเงิน')">การเงิน</div>
-        <div class="tab" onclick="setTab(this,'IT')">IT</div>
-        <div class="tab" onclick="setTab(this,'HR')">HR</div>
-        <div class="tab" onclick="setTab(this,'การตลาด')">การตลาด</div>
-      </div>
-      <div id="lbDiv"></div>
-    </div>
-
-    <div class="lb-card">
-      <div class="section-title">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-text-primary)"><path d="M12 7V3H2v18h20V7H12zm-2 12H4v-2h6v2zm0-4H4v-2h6v2zm0-4H4V9h6v2zm0-4H4V5h6v2zm10 12h-8v-2h8v2zm0-4h-8v-2h8v2zm0-4h-8V9h8v2z"/></svg>
-        สรุปตามแผนก
-      </div>
-      <div class="dept-grid" id="deptDiv"></div>
+    <!-- No data state -->
+    <div id="noDataBox" style="background:var(--card);border-radius:14px;border:1px solid var(--border);padding:3rem;text-align:center">
+      <div style="font-size:44px;margin-bottom:1rem">💰</div>
+      <h3 style="font-size:16px;font-weight:600;margin-bottom:.5rem">Well-being People Challenge 2026</h3>
+      <p style="color:var(--muted);font-size:13px;line-height:1.8">กด <strong>"โหลดข้อมูลตัวอย่าง"</strong> เพื่อดูหน้าตาก่อน<br>หรือ HR นำเข้าข้อมูลผ่าน Google Sheets</p>
+      <button onclick="loadSample()" style="margin-top:1.25rem;background:var(--navy);color:#fff;border:none;border-radius:9px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Prompt',sans-serif">โหลดข้อมูลตัวอย่าง</button>
     </div>
   </div>
 </div>
 
+<!-- ══════════════ DETAIL PAGE ══════════════ -->
+<div id="pageDetail" class="page">
+  <div class="detail-nav">
+    <button class="back-btn" onclick="goHome()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+      กลับหน้าหลัก
+    </button>
+    <div class="nav-divider"></div>
+    <div class="nav-title" id="navTitle">ผลการตรวจสอบ</div>
+  </div>
+
+  <div class="detail-main">
+
+    <!-- Profile + Saving -->
+    <div class="profile-card">
+      <div class="ptop">
+        <div class="av" id="av"></div>
+        <div style="flex:1">
+          <div class="pname" id="pname"></div>
+          <div class="pmeta" id="pmeta"></div>
+          <div class="pbadge" id="pbadge"></div>
+        </div>
+        <div class="pdate-box">
+          <div class="pdate-l">ข้อมูล ณ วันที่</div>
+          <div class="pdate-v" id="pdate"></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-label">ความคืบหน้าการออม</div>
+        <div class="prog-wrap">
+          <div class="circ-wrap">
+            <svg width="88" height="88" viewBox="0 0 88 88">
+              <circle cx="44" cy="44" r="36" fill="none" stroke="var(--border)" stroke-width="8"/>
+              <circle id="circArc" cx="44" cy="44" r="36" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="226"/>
+            </svg>
+            <div class="circ-inner">
+              <div class="circ-pct" id="circPct">0%</div>
+              <div class="circ-lbl">ออมแล้ว</div>
+            </div>
+          </div>
+          <div class="prog-detail">
+            <div class="pd-row"><span>COOP + PVD สะสม</span><strong id="pd1">—</strong></div>
+            <div class="pd-row"><span>ออมเพิ่มเติม</span><strong id="pd2">—</strong></div>
+            <div class="pd-row"><span>รวมออมทั้งหมด</span><strong id="pd3" style="color:var(--pink)">—</strong></div>
+            <div class="pd-row"><span>เป้าหมายรายปี (20%)</span><strong id="pd4">—</strong></div>
+            <div class="bar-track"><div id="barFill" class="bar-fill" style="width:0%"></div></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px">
+              <span id="barLeft"></span><span>เป้าหมาย 20%</span>
+            </div>
+            <div id="savNote"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section" style="padding-top:.75rem">
+        <div class="sav-grid" id="savGrid"></div>
+        <div id="monthSec" style="margin-top:1rem"></div>
+        <div id="extraSec" style="margin-top:1rem"></div>
+      </div>
+    </div>
+
+    <!-- Financial Health — คะแนนรวม + Risk Summary -->
+    <div class="health-card" id="healthCard" style="display:none">
+      <div class="health-top">
+        <div class="health-score-big">
+          <div class="hs-num" id="hsNum">—</div>
+          <div class="hs-label">คะแนน / 100</div>
+        </div>
+        <div class="health-info">
+          <h3>ผลตรวจสุขภาพการเงิน</h3>
+          <div id="riskBadge"></div>
+          <div class="risk-desc" id="riskDesc"></div>
+        </div>
+      </div>
+      <div class="rec-body">
+        <div class="sec-label" style="color:rgba(255,255,255,.4);margin-bottom:10px">ข้อแนะนำ</div>
+        <div class="rec-list" id="recList"></div>
+      </div>
+    </div>
+
+    <!-- Fun Coin -->
+    <div class="fc-card">
+      <div class="fc-top">
+        <div><h3>Fun Coin ของคุณ</h3><div style="color:rgba(255,255,255,.5);font-size:11px;margin-top:1px">แยกตามกิจกรรม WBPC</div></div>
+        <div style="text-align:right"><div class="fc-tot-n" id="fcTot">0</div><div class="fc-tot-l">รวม Fun Coin</div></div>
+      </div>
+      <div class="fc-body">
+        <div class="fc-list" id="fcList"></div>
+        <div id="fcNote"></div>
+      </div>
+    </div>
+
+    <!-- Submit Buttons -->
+    <div class="submit-card">
+      <div class="sec-label">ส่งเอกสารเพิ่มเติม</div>
+      <div class="submit-grid">
+        <a id="btnSaving" href="https://forms.gle/q4T1gZejvjx8VFvAA" target="_blank" class="sbtn s1">
+          <div class="sb-ic"><svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg></div>
+          <div><div class="sb-t">ส่งเอกสารการออม</div><div class="sb-s">กองทุน / ฝากประจำ / ประกัน</div></div>
+          <div class="sb-arr">→</div>
+        </a>
+        <a id="btnCoin" href="https://forms.gle/1zxmjbS838RFpewM8" target="_blank" class="sbtn s2">
+          <div class="sb-ic"><svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg></div>
+          <div><div class="sb-t">ส่งหลักฐาน Fun Coin</div><div class="sb-s">SET e-Learning / Reading</div></div>
+          <div class="sb-arr">→</div>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <script>
-const DATA = [
-  {id:'EMP001',name:'สมชาย ใจดี',dept:'การเงิน',s:80,i:65,sp:70,p:75,k:85},
-  {id:'EMP002',name:'สมหญิง รักงาน',dept:'HR',s:90,i:70,sp:85,p:80,k:75},
-  {id:'EMP003',name:'มานะ พัฒนา',dept:'IT',s:60,i:80,sp:55,p:65,k:90},
-  {id:'EMP004',name:'วิไล สุขใจ',dept:'การตลาด',s:75,i:60,sp:80,p:70,k:65},
-  {id:'EMP005',name:'ประสิทธิ์ มั่นคง',dept:'การเงิน',s:85,i:75,sp:65,p:85,k:80},
-  {id:'EMP006',name:'นภา รุ่งเรือง',dept:'การเงิน',s:55,i:45,sp:60,p:50,k:70},
-  {id:'EMP007',name:'ธีรพล สำเร็จ',dept:'IT',s:92,i:88,sp:78,p:90,k:85},
-  {id:'EMP008',name:'กมลา ดีงาม',dept:'HR',s:70,i:65,sp:75,p:68,k:72},
-  {id:'EMP009',name:'วรพล เก่งกาจ',dept:'การตลาด',s:40,i:35,sp:55,p:45,k:50},
-  {id:'EMP010',name:'ปรีชา วิสัย',dept:'การเงิน',s:78,i:72,sp:68,p:80,k:76},
+const ACT=[
+  {k:'fcSET',l:'WBPC-Wealth Activity (SET e-Learning)',c:'#6366f1'},
+  {k:'fcIncome',l:'WBPC-Wealth Activity (Income & Expenses)',c:'#0ea5e9'},
+  {k:'fcRegister',l:'WBPC-Wealth Register',c:'#8b5cf6'},
+  {k:'fcReading',l:'WBPC-Wealth Activity (Reading)',c:'#10b981'},
+  {k:'fcRetire',l:'WBPC-Wealth Activity (Retirement Plan)',c:'#f59e0b'},
+  {k:'fcBuddy',l:'WBPC-Finance Buddy: 3+2 Mission',c:'#e8186d'},
 ];
-DATA.forEach(d=>{ d.avg = Math.round((d.s+d.i+d.sp+d.p+d.k)/5*10)/10; });
 
-const CATS=[{k:'s',l:'การออม',c:'#3b82f6'},{k:'i',l:'การลงทุน',c:'#8b5cf6'},{k:'sp',l:'การใช้จ่าย',c:'#f97316'},{k:'p',l:'การวางแผน',c:'#22c55e'},{k:'k',l:'ความรู้',c:'#f0b429'}];
+const RISK_MAP={
+  'ดีมาก':{cls:'risk-great',icon:'🌟',desc:'สุขภาพการเงินยอดเยี่ยม! รักษาวินัยนี้ไว้และพิจารณาต่อยอดการลงทุนให้เติบโตยิ่งขึ้น'},
+  'ดี':{cls:'risk-good',icon:'✅',desc:'สุขภาพการเงินอยู่ในเกณฑ์ดี มีจุดที่ควรพัฒนาเพิ่มเติมเล็กน้อยเพื่อให้แข็งแกร่งยิ่งขึ้น'},
+  'ปานกลาง':{cls:'risk-med',icon:'⚡',desc:'สุขภาพการเงินพอใช้ได้ ควรเริ่มปรับปรุงการออมและการวางแผนการเงินให้มีระบบมากขึ้น'},
+  'เสี่ยง':{cls:'risk-danger',icon:'⚠️',desc:'สุขภาพการเงินต้องการการดูแลเร่งด่วน แนะนำให้เริ่มวางแผนการเงินและลดภาระหนี้โดยเร็ว'},
+};
 
-function scoreColor(s){ return s>=80?'#22c55e':s>=60?'#f0b429':'#ef4444'; }
-function scoreLabel(s){ return s>=80?'ดีมาก':s>=60?'ปานกลาง':'ต้องพัฒนา'; }
-function initials(n){ const p=n.trim().split(' '); return p.length>=2?p[0][0]+p[1][0]:n.slice(0,2); }
+const RECS_BY_RISK={
+  'ดีมาก':[
+    {p:'p-low',t:'ต่อยอดการลงทุน',d:'พิจารณากระจายพอร์ตลงทุนในสินทรัพย์ที่หลากหลาย เพื่อสร้างผลตอบแทนระยะยาว',c:'#059669'},
+    {p:'p-low',t:'วางแผนเกษียณ',d:'ทบทวนแผนเกษียณและเพิ่มการออมในกองทุนสำรองเลี้ยงชีพหรือ RMF/LTF',c:'#059669'},
+  ],
+  'ดี':[
+    {p:'p-med',t:'เพิ่มการออมให้สม่ำเสมอ',d:'ลองเพิ่มการออมอัตโนมัติอีก 5% เพื่อให้บรรลุเป้าหมายเร็วขึ้น',c:'#f59e0b'},
+    {p:'p-med',t:'ลดค่าใช้จ่ายที่ไม่จำเป็น',d:'ตรวจสอบรายจ่ายประจำเดือนและหาโอกาสลดค่าใช้จ่าย subscription หรือบริการที่ไม่ได้ใช้',c:'#f59e0b'},
+    {p:'p-low',t:'เริ่มต้นลงทุนระยะยาว',d:'พิจารณาเริ่มลงทุนในกองทุนรวมหรือ LTF เพื่อสร้างความมั่งคั่งระยะยาว',c:'#059669'},
+  ],
+  'ปานกลาง':[
+    {p:'p-high',t:'เพิ่มการออมเร่งด่วน',d:'ตั้งเป้าออมอัตโนมัติผ่านสหกรณ์หรือ PVD เพิ่มอีก 5-10% ของรายได้ทันที',c:'#dc2626'},
+    {p:'p-high',t:'ทบทวนค่าใช้จ่าย',d:'จดบันทึกรายจ่ายรายวัน 1 เดือน เพื่อหาสิ่งที่ใช้เกินความจำเป็น',c:'#dc2626'},
+    {p:'p-med',t:'สร้างกองทุนฉุกเฉิน',d:'ตั้งเป้าสะสมเงินฉุกเฉิน 3-6 เดือนของรายได้ไว้ในบัญชีออมทรัพย์',c:'#f59e0b'},
+    {p:'p-med',t:'ศึกษาการลงทุนเบื้องต้น',d:'เรียนรู้ผ่าน SET e-Learning เพื่อเริ่มต้นลงทุนในกองทุนรวมความเสี่ยงต่ำ',c:'#f59e0b'},
+  ],
+  'เสี่ยง':[
+    {p:'p-high',t:'จัดการหนี้สินเร่งด่วน',d:'ทำบัญชีหนี้ทั้งหมด จัดลำดับชำระหนี้ดอกเบี้ยสูงก่อน และหยุดก่อหนี้ใหม่',c:'#dc2626'},
+    {p:'p-high',t:'ลดค่าใช้จ่ายไม่จำเป็น',d:'ใช้กฎ 50/30/20: จำเป็น 50% / ต้องการ 30% / ออม 20% อย่างเคร่งครัด',c:'#dc2626'},
+    {p:'p-high',t:'เริ่มออมทันที',d:'แม้จะเริ่มออมเพียงเดือนละ 500 บาท ก็ดีกว่าไม่ออมเลย สร้างนิสัยออมก่อนใช้',c:'#dc2626'},
+    {p:'p-med',t:'ขอคำปรึกษาด้านการเงิน',d:'ปรึกษาผู้เชี่ยวชาญด้านการวางแผนการเงิน หรือเข้าร่วมโปรแกรม Wealth Activity ของบริษัท',c:'#f59e0b'},
+  ],
+};
 
-let hlId='';
-let currentDept='';
+let allData=[], hlId='';
+document.getElementById('cdNum').textContent=Math.max(0,Math.floor((new Date('2026-12-31')-new Date())/86400000)).toLocaleString();
 
-function doSearch(){
-  const q=document.getElementById('sq').value.trim().toLowerCase();
-  const emp=DATA.find(d=>d.id.toLowerCase()===q||d.name.toLowerCase().includes(q));
-  const pa=document.getElementById('profArea');
-  if(!emp){ pa.classList.add('hidden'); hlId=''; renderLb(); return; }
-  hlId=emp.id;
-  document.getElementById('av').textContent=initials(emp.name);
-  document.getElementById('pname').textContent=emp.name;
-  document.getElementById('pmeta').textContent=emp.dept+' · '+emp.id;
-  document.getElementById('pbadge').textContent=scoreLabel(emp.avg);
-  document.getElementById('bignum').textContent=emp.avg;
-  document.getElementById('bignum').style.color=scoreColor(emp.avg);
-  document.getElementById('catsDiv').innerHTML=CATS.map(c=>`
-    <div class="cat">
-      <div class="clabel">${c.l}</div>
-      <div class="cbar-bg"><div class="cbar" style="width:${emp[c.k]}%;background:${c.c}"></div></div>
-      <div class="cscore" style="color:${c.c}">${emp[c.k]}</div>
-    </div>`).join('');
-  pa.classList.remove('hidden');
-  renderLb();
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
 }
 
-function setTab(el,dept){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  currentDept=dept;
+function goHome(){
+  showPage('pageHome');
+  document.getElementById('homeInput').value='';
+}
+
+function loadSample(){
+  allData=[
+    {id:'1103700123456',empCode:'EMP001',name:'กัญชุดา เลิศภักดีบวร',dept:'HR',
+     coopT:2800,pvdT:4542,cpT:7342,exT:0,totSav:7342,goal:196214,pct:3.7,status:'ต้องเพิ่มการออม',
+     months:[{month:'01/2026',coop:1400,pvd:2271,total:3671},{month:'02/2026',coop:1400,pvd:2271,total:3671}],
+     extra:{fund:0,deposit:0,ins:0,lottery:0,other:0,total:0,date:''},
+     fc:{date:'27/02/2026',fcSET:50,fcIncome:50,fcRegister:100,fcReading:50,fcRetire:100,fcBuddy:300,total:650},
+     fcTot:650,date:'27/02/2026',healthScore:44,riskSummary:'ปานกลาง',hasHealth:true},
+    {id:'1103700234567',empCode:'EMP002',name:'สมชาย ใจดี',dept:'Finance',
+     coopT:2400,pvdT:3000,cpT:5400,exT:30000,totSav:35400,goal:156000,pct:22.6,status:'กำลังดี',
+     months:[{month:'01/2026',coop:1200,pvd:1500,total:2700},{month:'02/2026',coop:1200,pvd:1500,total:2700}],
+     extra:{fund:20000,deposit:10000,ins:0,lottery:0,other:0,total:30000,date:'15/01/2026'},
+     fc:{date:'27/02/2026',fcSET:100,fcIncome:100,fcRegister:100,fcReading:100,fcRetire:200,fcBuddy:300,total:900},
+     fcTot:900,date:'27/02/2026',healthScore:64,riskSummary:'ดี',hasHealth:true},
+    {id:'1103700345678',empCode:'EMP003',name:'มานะ พัฒนา',dept:'IT',
+     coopT:3000,pvdT:3600,cpT:6600,exT:180000,totSav:186600,goal:172800,pct:107.8,status:'บรรลุเป้าหมาย',
+     months:[{month:'01/2026',coop:1500,pvd:1800,total:3300},{month:'02/2026',coop:1500,pvd:1800,total:3300}],
+     extra:{fund:50000,deposit:0,ins:12000,lottery:0,other:118000,total:180000,date:'20/01/2026'},
+     fc:{date:'27/02/2026',fcSET:100,fcIncome:100,fcRegister:100,fcReading:100,fcRetire:200,fcBuddy:300,total:900},
+     fcTot:900,date:'27/02/2026',healthScore:87,riskSummary:'ดีมาก',hasHealth:true},
+    {id:'1103700456789',empCode:'EMP004',name:'วิไล สุขใจ',dept:'Marketing',
+     coopT:2200,pvdT:2600,cpT:4800,exT:40000,totSav:44800,goal:139200,pct:32.2,status:'กำลังดี',
+     months:[{month:'01/2026',coop:1100,pvd:1300,total:2400},{month:'02/2026',coop:1100,pvd:1300,total:2400}],
+     extra:{fund:0,deposit:20000,ins:0,lottery:10000,other:10000,total:40000,date:'10/02/2026'},
+     fc:{date:'27/02/2026',fcSET:50,fcIncome:100,fcRegister:100,fcReading:50,fcRetire:200,fcBuddy:300,total:800},
+     fcTot:800,date:'27/02/2026',healthScore:58,riskSummary:'ดี',hasHealth:true},
+    {id:'1103700567890',empCode:'EMP005',name:'ประสิทธิ์ มั่นคง',dept:'Operations',
+     coopT:1800,pvdT:2200,cpT:4000,exT:5000,totSav:9000,goal:129600,pct:6.9,status:'ต้องเพิ่มการออม',
+     months:[{month:'01/2026',coop:900,pvd:1100,total:2000},{month:'02/2026',coop:900,pvd:1100,total:2000}],
+     extra:{fund:0,deposit:5000,ins:0,lottery:0,other:0,total:5000,date:'05/02/2026'},
+     fc:{date:'27/02/2026',fcSET:0,fcIncome:50,fcRegister:100,fcReading:0,fcRetire:100,fcBuddy:300,total:550},
+     fcTot:550,date:'27/02/2026',healthScore:30,riskSummary:'เสี่ยง',hasHealth:true},
+  ];
+  initDash();
+}
+
+function initDash(){
+  document.getElementById('noDataBox').style.display='none';
+  document.getElementById('lbSection').style.display='block';
   renderLb();
 }
 
 function renderLb(){
-  let data=currentDept?DATA.filter(d=>d.dept===currentDept):[...DATA];
-  data.sort((a,b)=>b.avg-a.avg);
-  document.getElementById('lbDiv').innerHTML=data.map((d,i)=>{
+  const top5=[...allData].sort((a,b)=>b.fcTot-a.fcTot).slice(0,5);
+  const max=top5[0]?.fcTot||1;
+  document.getElementById('lbList').innerHTML=top5.map((d,i)=>{
     const rc=i===0?'r1':i===1?'r2':i===2?'r3':'rn';
-    const hl=d.id===hlId?' hl':'';
-    return `<div class="lb-row${hl}">
+    return `<div class="lb-row${d.id===hlId?' hl':''}">
       <div class="rank ${rc}">${i+1}</div>
-      <div style="flex:1"><div class="lname">${d.name}</div><div class="ldept">${d.dept}</div></div>
-      <div class="lbar"><div class="lbar-fill" style="width:${d.avg}%"></div></div>
-      <div class="lsc" style="color:${scoreColor(d.avg)}">${d.avg}</div>
+      <div class="lb-code">${d.empCode||d.id}</div>
+      <div class="lb-bar-w"><div class="lb-bar-f" style="width:${Math.round(d.fcTot/max*100)}%"></div></div>
+      <div class="lb-sc">${d.fcTot.toLocaleString()}</div>
     </div>`;
   }).join('');
 }
 
-function renderDept(){
-  const depts=[...new Set(DATA.map(d=>d.dept))];
-  document.getElementById('deptDiv').innerHTML=depts.map(dept=>{
-    const m=DATA.filter(d=>d.dept===dept);
-    const avg=Math.round(m.reduce((s,d)=>s+d.avg,0)/m.length*10)/10;
-    return `<div class="dept-card">
-      <div class="dname">${dept}</div>
-      <div class="dscore" style="color:${scoreColor(avg)}">${avg}</div>
-      <div class="dcount">${m.length} คน · ${scoreLabel(avg)}</div>
-    </div>`;
-  }).join('');
+function doSearch(){
+  const q=document.getElementById('homeInput').value.trim();
+  hideErr();
+  if(!q){showErr('กรุณากรอกรหัสบัตรประชาชน 13 หลัก');return;}
+  if(!allData.length){showErr('กรุณากด "โหลดข้อมูลตัวอย่าง" ก่อน หรือรอ HR นำเข้าข้อมูล');return;}
+  const emp=allData.find(d=>d.id===q||d.empCode===q);
+  if(!emp){showErr('ไม่พบข้อมูล กรุณาตรวจสอบรหัสบัตรประชาชนอีกครั้ง');return;}
+  hlId=emp.id;
+  renderLb();
+  renderDetail(emp);
+  showPage('pageDetail');
 }
 
-renderLb();
-renderDept();
+function renderDetail(emp){
+  const ini=emp.name.trim().split(' ');
+  document.getElementById('navTitle').textContent=emp.name;
+  document.getElementById('av').textContent=ini.length>=2?ini[0][0]+ini[1][0]:emp.name.slice(0,2);
+  document.getElementById('pname').textContent=emp.name;
+  document.getElementById('pmeta').textContent=emp.dept+(emp.empCode?' · '+emp.empCode:'');
+  const b=document.getElementById('pbadge');
+  b.textContent=emp.status||'—';
+  b.className='pbadge '+(emp.status==='บรรลุเป้าหมาย'?'b-reach':emp.status==='กำลังดี'?'b-ok':'b-low');
+  document.getElementById('pdate').textContent=emp.date||'—';
+
+  // circle
+  const pct=Math.min(emp.pct,100),col=emp.pct>=100?'#059669':emp.pct>=20?'#f59e0b':'#e8186d';
+  const arc=document.getElementById('circArc');
+  arc.setAttribute('stroke-dashoffset',Math.round(226-(226*pct/100)));
+  arc.setAttribute('stroke',col);
+  document.getElementById('circPct').textContent=emp.pct.toFixed(1)+'%';
+  document.getElementById('circPct').style.color=col;
+  document.getElementById('pd1').textContent=emp.cpT.toLocaleString()+' บาท';
+  document.getElementById('pd2').textContent=emp.exT.toLocaleString()+' บาท';
+  document.getElementById('pd3').textContent=emp.totSav.toLocaleString()+' บาท';
+  document.getElementById('pd4').textContent=emp.goal.toLocaleString()+' บาท';
+  const bf=document.getElementById('barFill');
+  bf.style.width=Math.min(100,Math.round(emp.pct))+'%';
+  bf.className='bar-fill '+(emp.pct>=100?'bar-reach':emp.pct>=20?'bar-ok':'bar-low');
+  document.getElementById('barLeft').textContent=emp.pct>=100?'บรรลุเป้าหมายแล้ว!':'ยังขาดอีก '+Math.max(0,emp.goal-emp.totSav).toLocaleString()+' บาท';
+  document.getElementById('savNote').innerHTML=emp.pct>=20
+    ?'<div class="hint hint-green">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving!</div>'
+    :'<div class="hint hint-red">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving</div>';
+
+  // saving grid
+  document.getElementById('savGrid').innerHTML=`
+    <div class="si coop"><div class="si-lbl">COOP สะสม</div><div class="si-val">${emp.coopT.toLocaleString()}</div><div class="si-unit">บาท</div></div>
+    <div class="si pvd"><div class="si-lbl">PVD สะสม</div><div class="si-val">${emp.pvdT.toLocaleString()}</div><div class="si-unit">บาท</div></div>
+    <div class="si extra"><div class="si-lbl">ออมเพิ่มเติม</div><div class="si-val">${emp.exT.toLocaleString()}</div><div class="si-unit">บาท</div></div>
+    <div class="si total"><div class="si-lbl">รวมทั้งหมด</div><div class="si-val">${emp.totSav.toLocaleString()}</div><div class="si-unit">บาท</div></div>`;
+
+  // monthly
+  const ms=document.getElementById('monthSec');
+  if(emp.months?.length){
+    ms.innerHTML=`<div class="sec-label">COOP + PVD รายเดือน</div>
+    <table class="tbl"><tr><th>เดือน</th><th>COOP</th><th>PVD</th><th>รวม</th></tr>
+    ${emp.months.map(m=>`<tr><td>${m.month}</td><td>${m.coop.toLocaleString()}</td><td>${m.pvd.toLocaleString()}</td><td>${m.total.toLocaleString()}</td></tr>`).join('')}
+    <tr class="sum"><td>รวมสะสม</td><td>${emp.coopT.toLocaleString()}</td><td>${emp.pvdT.toLocaleString()}</td><td>${emp.cpT.toLocaleString()}</td></tr></table>`;
+  } else ms.innerHTML='';
+
+  // extra
+  const ex=document.getElementById('extraSec');
+  const ei=[{l:'กองทุน/หุ้น',v:emp.extra.fund},{l:'ฝากประจำ',v:emp.extra.deposit},{l:'ประกันชีวิต',v:emp.extra.ins},{l:'สลากออมสิน ≥2ปี',v:emp.extra.lottery},{l:'อื่นๆ',v:emp.extra.other}].filter(x=>x.v>0);
+  ex.innerHTML=ei.length?`<div class="sec-label">ออมเพิ่มเติม${emp.extra.date?' ('+emp.extra.date+')':''}</div>
+    <table class="tbl"><tr><th style="text-align:left">ประเภท</th><th>จำนวน (บาท)</th></tr>
+    ${ei.map(x=>`<tr><td style="text-align:left">${x.l}</td><td class="amt">${x.v.toLocaleString()}</td></tr>`).join('')}
+    <tr class="sum"><td style="text-align:left">รวม</td><td class="amt">${emp.exT.toLocaleString()}</td></tr></table>`
+    :'<div style="font-size:12px;color:var(--muted);padding:4px 0">ยังไม่มีการออมเพิ่มเติม — กดปุ่มส่งเอกสารด้านล่างเพื่อส่งหลักฐาน</div>';
+
+  // health — score + risk summary only
+  const hc=document.getElementById('healthCard');
+  if(emp.hasHealth && emp.healthScore!=null){
+    hc.style.display='block';
+    const scoreColor=emp.healthScore>=70?'#6ee7b7':emp.healthScore>=50?'#93c5fd':emp.healthScore>=30?'#fcd34d':'#fca5a5';
+    document.getElementById('hsNum').textContent=emp.healthScore;
+    document.getElementById('hsNum').style.color=scoreColor;
+    const risk=RISK_MAP[emp.riskSummary]||RISK_MAP['ปานกลาง'];
+    document.getElementById('riskBadge').innerHTML=`<div class="risk-badge ${risk.cls}">${risk.icon} ${emp.riskSummary}</div>`;
+    document.getElementById('riskDesc').textContent=risk.desc;
+    const recs=RECS_BY_RISK[emp.riskSummary]||RECS_BY_RISK['ปานกลาง'];
+    document.getElementById('recList').innerHTML=recs.map(r=>`
+      <div class="rec-item ${r.p}">
+        <div class="rec-dot" style="background:${r.c}"></div>
+        <div><div class="rec-t">${r.t}</div><div class="rec-d">${r.d}</div></div>
+      </div>`).join('');
+  } else hc.style.display='none';
+
+  // fun coin
+  document.getElementById('fcTot').textContent=emp.fcTot.toLocaleString();
+  const maxC=Math.max(...ACT.map(a=>emp.fc[a.k]||0),1);
+  document.getElementById('fcList').innerHTML=ACT.map(a=>`
+    <div class="fc-row">
+      <div class="fc-dot" style="background:${a.c}"></div>
+      <div class="fc-lbl">${a.l}</div>
+      <div class="fc-bar-w"><div class="fc-bar-f" style="width:${Math.round((emp.fc[a.k]||0)/maxC*100)}%;background:${a.c}"></div></div>
+      <div class="fc-v" style="color:${a.c}">${(emp.fc[a.k]||0).toLocaleString()}</div>
+    </div>`).join('');
+  document.getElementById('fcNote').innerHTML=emp.pct>=20
+    ?'<div class="fc-note" style="background:var(--green-lt);color:#065f46">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving เพิ่ม!</div>'
+    :'<div class="fc-note" style="background:var(--red-lt);color:#991b1b">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving</div>';
+}
+
+function showErr(m){const e=document.getElementById('errBox');e.textContent=m;e.style.display='block';}
+function hideErr(){document.getElementById('errBox').style.display='none';}
 </script>
+</body>
+</html>
