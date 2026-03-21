@@ -569,21 +569,46 @@ function renderDetail(emp) {
   b.textContent = status;
   b.className = 'pbadge ' + (status==='บรรลุเป้าหมาย'?'b-reach':status==='กำลังดี'?'b-ok':'b-low');
 
-  // คำนวณ % การออมจริง = totalSav / (เงินเดือน × 12) × 100
+  // วงกลม % = totalSav / salary × 100 (รายเดือน)
   const annualSalary = emp.salary * 12;
-  const realSavPct = annualSalary > 0 ? Math.round(emp.totalSav / annualSalary * 1000) / 10 : emp.savPct;
+  const realSavPct = emp.salary > 0 ? Math.round(emp.totalSav / emp.salary * 10000) / 100 : 0;
 
-  // เป้า Fun Coin 20%
-  const goal20Amt = Math.round(annualSalary * 20 / 100);
-  const need20 = Math.max(0, goal20Amt - emp.totalSav);
-  const pct20 = Math.min(realSavPct, 100);
-  const col20 = realSavPct >= 100 ? '#059669' : realSavPct >= 20 ? '#f59e0b' : '#e8186d';
+  // Fun Coin 20% — ยึดจากวงกลม % เทียบกับเงินเดือนรายเดือน
+  const goal20Monthly = emp.salary * 20 / 100; // 20% ของเงินเดือนเดือนเดียว
+  const need20 = Math.max(0, goal20Monthly - emp.totalSav);
+  const pct20Circle = Math.min(realSavPct / 20 * 100, 100);
+  const col20 = realSavPct >= 20 ? '#059669' : realSavPct >= 10 ? '#f59e0b' : '#e8186d';
 
-  // circle
+  // วงกลม
   const arc = document.getElementById('circArc');
-  arc.setAttribute('stroke-dashoffset', Math.round(226 - (226 * pct20 / 100)));
+  arc.setAttribute('stroke-dashoffset', Math.round(226 - (226 * pct20Circle / 100)));
   arc.setAttribute('stroke', col20);
-  document.getElementById('circPct').textContent = realSavPct.toFixed(1) + '%';
+  document.getElementById('circPct').textContent = realSavPct.toFixed(2) + '%';
+  document.getElementById('circPct').style.color = col20;
+
+  document.getElementById('pd1').textContent = (emp.pvd || 0).toLocaleString() + ' บาท';
+  document.getElementById('pd2').textContent = (emp.coop || 0).toLocaleString() + ' บาท';
+  document.getElementById('pd3').textContent = (emp.extra || 0).toLocaleString() + ' บาท';
+  document.getElementById('pd4').textContent = emp.totalSav.toLocaleString() + ' บาท';
+  document.getElementById('pd5').textContent = (Math.round(goal20Monthly)).toLocaleString() + ' บาท';
+
+  const bf = document.getElementById('barFill');
+  bf.style.width = Math.min(100, Math.round(pct20Circle)) + '%';
+  bf.className = 'bar-fill ' + (realSavPct >= 20 ? 'bar-reach' : realSavPct >= 10 ? 'bar-ok' : 'bar-low');
+
+  document.getElementById('barLeft').textContent = need20 > 0
+    ? 'ยังขาดอีก ' + Math.round(need20).toLocaleString() + ' บาท จะครบ 20%'
+    : 'บรรลุเป้า 20% แล้ว!';
+  document.getElementById('barTarget').textContent = 'เป้าหมาย 20%';
+  document.getElementById('savNote').innerHTML = realSavPct >= 20
+    ? '<div class="hint hint-g">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving!</div>'
+    : '<div class="hint hint-r">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving (ขาดอีก ' + Math.round(need20).toLocaleString() + ' บาท)</div>';
+
+  // circle — แสดง % จริง วงกลมเทียบกับเป้า 20%
+  const arc = document.getElementById('circArc');
+  arc.setAttribute('stroke-dashoffset', Math.round(226 - (226 * pct20Circle / 100)));
+  arc.setAttribute('stroke', col20);
+  document.getElementById('circPct').textContent = realSavPct.toFixed(2) + '%';
   document.getElementById('circPct').style.color = col20;
 
   document.getElementById('pd1').textContent = (emp.pvd || 0).toLocaleString() + ' บาท';
@@ -593,8 +618,8 @@ function renderDetail(emp) {
   document.getElementById('pd5').textContent = goal20Amt.toLocaleString() + ' บาท';
 
   const bf = document.getElementById('barFill');
-  bf.style.width = Math.min(100, Math.round(realSavPct)) + '%';
-  bf.className = 'bar-fill ' + (realSavPct >= 100 ? 'bar-reach' : realSavPct >= 20 ? 'bar-ok' : 'bar-low');
+  bf.style.width = Math.min(100, Math.round(pct20Circle)) + '%';
+  bf.className = 'bar-fill ' + (realSavPct >= 20 ? 'bar-reach' : realSavPct >= 10 ? 'bar-ok' : 'bar-low');
 
   document.getElementById('barLeft').textContent = need20 > 0 ? 'ยังขาดอีก ' + need20.toLocaleString() + ' บาท' : 'บรรลุเป้าหมายแล้ว!';
   document.getElementById('barTarget').textContent = 'เป้าหมาย 20%';
@@ -609,7 +634,7 @@ function renderDetail(emp) {
     <div class="si extra"><div class="si-lbl">ออมเพิ่มเติม</div><div class="si-val">${(emp.extra||0).toLocaleString()}</div><div class="si-unit">บาท</div></div>
     <div class="si total"><div class="si-lbl">รวมออม</div><div class="si-val">${emp.totalSav.toLocaleString()}</div><div class="si-unit">บาท</div></div>`;
 
-  // เป้าหมายส่วนตัวของพนักงาน
+  // เป้าหมายส่วนตัว = salary × 12 × goalPct%
   const personalGoal = document.getElementById('personalGoalNote');
   if (emp.goalPct && emp.goalPct > 0 && annualSalary > 0) {
     const personalGoalAnnual = Math.round(annualSalary * emp.goalPct / 100);
