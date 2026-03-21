@@ -283,7 +283,8 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
       </div>
       <div class="sec" style="padding-top:.75rem">
         <div class="sav-grid" id="savGrid"></div>
-        <div id="savingPlanNote" style="margin-top:1rem"></div>
+        <div id="personalGoalNote" style="margin-top:1rem"></div>
+        <div id="savingPlanNote" style="margin-top:.75rem"></div>
       </div>
     </div>
 
@@ -373,9 +374,9 @@ const COL = {
 
 // ── คอลัมน์ใน ผู้เข้าร่วม (Microsoft form) (0-indexed) ──
 const HCOL = {
-  empCode: 5,    // F รหัสพนักงาน
-  score: 24,     // Y Total Point
-  risk: 25,      // Z RiskLevel
+  empCode: 0,    // F รหัสพนักงาน (หลัง IMPORTRANGE col F:Z → index 0)
+  score: 18,     // Y Total Point (F=0, G=1...Y=18)
+  risk: 19,      // Z RiskLevel (Z=19)
 };
 
 const RISK_MAP = {
@@ -589,10 +590,10 @@ function renderDetail(emp) {
 
   const need = Math.max(0, emp.goalAmt - emp.totalSav);
   document.getElementById('barLeft').textContent = need > 0 ? 'ยังขาดอีก ' + need.toLocaleString() + ' บาท' : 'บรรลุเป้าหมายแล้ว!';
-  document.getElementById('barTarget').textContent = `เป้าหมาย ${emp.goalPct}%`;
-  document.getElementById('savNote').innerHTML = emp.savPct >= emp.goalPct
-    ? '<div class="hint hint-g">✓ ออมครบเป้าหมายแล้ว — ได้รับ Fun Coin Saving!</div>'
-    : '<div class="hint hint-r">⚠ ออมให้ครบ ' + emp.goalPct + '% เพื่อรับ Fun Coin Saving</div>';
+  document.getElementById('barTarget').textContent = `เป้าหมาย 20%`;
+  document.getElementById('savNote').innerHTML = emp.savPct >= 20
+    ? '<div class="hint hint-g">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving!</div>'
+    : '<div class="hint hint-r">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving</div>';
 
   // saving grid
   document.getElementById('savGrid').innerHTML = `
@@ -600,6 +601,29 @@ function renderDetail(emp) {
     <div class="si coop"><div class="si-lbl">สหกรณ์</div><div class="si-val">${(emp.coop||0).toLocaleString()}</div><div class="si-unit">บาท</div></div>
     <div class="si extra"><div class="si-lbl">ออมเพิ่มเติม</div><div class="si-val">${(emp.extra||0).toLocaleString()}</div><div class="si-unit">บาท</div></div>
     <div class="si total"><div class="si-lbl">รวมออม</div><div class="si-val">${emp.totalSav.toLocaleString()}</div><div class="si-unit">บาท</div></div>`;
+
+  // เป้าหมายส่วนตัวของพนักงาน
+  const personalGoal = document.getElementById('personalGoalNote');
+  if (emp.goalPct && emp.goalPct > 0) {
+    const personalGoalAmt = Math.round(emp.salary * 12 * emp.goalPct / 100);
+    const personalNeed = Math.max(0, personalGoalAmt - emp.totalSav);
+    const personalPct = personalGoalAmt > 0 ? Math.min(Math.round(emp.totalSav / personalGoalAmt * 100), 100) : 0;
+    personalGoal.innerHTML = `
+      <div style="background:var(--blue-lt);border:1px solid rgba(37,99,235,.2);border-radius:10px;padding:12px 14px">
+        <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">เป้าหมายที่คุณตั้งไว้ ${emp.goalPct}% ของรายได้</div>
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+          <span style="color:var(--muted)">เป้าหมายปีนี้</span>
+          <strong>${personalGoalAmt.toLocaleString()} บาท</strong>
+        </div>
+        <div style="height:5px;background:rgba(37,99,235,.15);border-radius:99px;overflow:hidden;margin-bottom:5px">
+          <div style="height:100%;width:${personalPct}%;background:var(--blue);border-radius:99px;transition:width .8s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+          <span>${personalPct}% (${emp.totalSav.toLocaleString()} บาท)</span>
+          <span>${personalNeed > 0 ? 'ยังขาดอีก ' + personalNeed.toLocaleString() + ' บาท' : '✓ บรรลุเป้าหมายส่วนตัวแล้ว!'}</span>
+        </div>
+      </div>`;
+  } else personalGoal.innerHTML = '';
 
   // แผนออมเงิน
   const savingPlan = document.getElementById('savingPlanNote');
@@ -642,9 +666,9 @@ function renderDetail(emp) {
       <div class="fc-bw"><div class="fc-bf" style="width:${Math.round((emp[f.k]||0)/maxC*100)}%;background:${f.c}"></div></div>
       <div class="fc-v" style="color:${f.c}">${(emp[f.k]||0).toLocaleString()}</div>
     </div>`).join('');
-  document.getElementById('fcNote').innerHTML = emp.savPct >= emp.goalPct
-    ? '<div class="fc-note" style="background:var(--green-lt);color:#065f46">✓ ออมครบเป้าหมายแล้ว — ได้รับ Fun Coin Saving เพิ่ม!</div>'
-    : '<div class="fc-note" style="background:var(--red-lt);color:#991b1b">⚠ ออมให้ครบ ' + emp.goalPct + '% เพื่อรับ Fun Coin Saving</div>';
+  document.getElementById('fcNote').innerHTML = emp.savPct >= 20
+    ? '<div class="fc-note" style="background:var(--green-lt);color:#065f46">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving เพิ่ม!</div>'
+    : '<div class="fc-note" style="background:var(--red-lt);color:#991b1b">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving</div>';
 }
 
 function showPage(id) {
