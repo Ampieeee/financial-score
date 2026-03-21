@@ -91,11 +91,11 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
 
 /* PROGRESS */
 .prog-wrap{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
-.circ{position:relative;width:130px;height:130px;flex-shrink:0}
+.circ{position:relative;width:100px;height:100px;flex-shrink:0}
 .circ svg{transform:rotate(-90deg)}
-.circ-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}
-.circ-pct{font-size:17px;font-weight:700;line-height:1.2;text-align:center;word-break:break-all}
-.circ-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-align:center}
+.circ-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px}
+.circ-pct{font-size:15px;font-weight:700;line-height:1.2;text-align:center;word-break:break-all}
+.circ-lbl{font-size:10px;color:var(--muted);margin-top:3px;text-align:center}
 .prog-d{flex:1;min-width:180px}
 .pd-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
 .pd-row span{color:var(--muted)}.pd-row strong{color:var(--text);font-weight:600}
@@ -258,9 +258,9 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
         <div class="sec-lbl">ความคืบหน้าการออม</div>
         <div class="prog-wrap">
           <div class="circ">
-            <svg width="130" height="130" viewBox="0 0 130 130">
-              <circle cx="65" cy="65" r="54" fill="none" stroke="var(--border)" stroke-width="9"/>
-              <circle id="circArc" cx="65" cy="65" r="54" fill="none" stroke-width="9" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="339"/>
+            <svg width="100" height="100" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--border)" stroke-width="8"/>
+              <circle id="circArc" cx="50" cy="50" r="42" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/>
             </svg>
             <div class="circ-in">
               <div class="circ-pct" id="circPct">0%</div>
@@ -590,7 +590,7 @@ function renderDetail(emp) {
 
   // วงกลม
   const arc = document.getElementById('circArc');
-  arc.setAttribute('stroke-dashoffset', Math.round(339 - (339 * pct20Circle / 100)));
+  arc.setAttribute('stroke-dashoffset', Math.round(264 - (264 * pct20Circle / 100)));
   arc.setAttribute('stroke', col20);
   document.getElementById('circPct').textContent = realSavPct.toFixed(2) + '%';
   document.getElementById('circPct').style.color = col20;
