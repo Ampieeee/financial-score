@@ -560,7 +560,16 @@ function doSearch() {
 function renderDetail(emp) {
   const ini = emp.name.trim().split(' ');
   document.getElementById('navTitle').textContent = emp.name;
-  document.getElementById('av').textContent = ini.length >= 2 ? ini[0][0] + ini[1][0] : emp.name.slice(0, 2);
+  // สุ่มสีตามชื่อ — แต่ละคนได้สีไม่ซ้ำกัน
+  const AVATAR_COLORS = [
+    '#e8186d','#7c3aed','#2563eb','#059669','#d97706',
+    '#dc2626','#0891b2','#65a30d','#9333ea','#ea580c',
+  ];
+  const nameHash = emp.name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const avatarColor = AVATAR_COLORS[nameHash % AVATAR_COLORS.length];
+  const avEl = document.getElementById('av');
+  avEl.textContent = ini.length >= 2 ? ini[0][0] + ini[1][0] : emp.name.slice(0, 2);
+  avEl.style.background = avatarColor;
   document.getElementById('pname').textContent = emp.name;
   document.getElementById('pmeta').textContent = (emp.dept || '') + ' · ' + emp.empCode;
 
