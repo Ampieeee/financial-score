@@ -94,7 +94,7 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
 .circ{position:relative;width:130px;height:130px;flex-shrink:0}
 .circ svg{transform:rotate(-90deg)}
 .circ-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}
-.circ-pct{font-size:20px;font-weight:700;line-height:1.2;text-align:center;word-break:break-all}
+.circ-pct{font-size:17px;font-weight:700;line-height:1.2;text-align:center;word-break:break-all}
 .circ-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-align:center}
 .prog-d{flex:1;min-width:180px}
 .pd-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
@@ -411,12 +411,12 @@ const RECS = {
 };
 
 const FC_ITEMS = [
-  {k:'fcWealthCheck',l:'Fun Coin Wealth Check',c:'#6366f1'},
-  {k:'fcSaving',l:'Fun Coin Saving (ออมครบ 20%)',c:'#059669'},
-  {k:'fcActivity',l:'Fun Coin Activity (กิจกรรม)',c:'#0ea5e9'},
-  {k:'fcQuestion',l:'Fun Coin Q&A',c:'#f59e0b'},
-  {k:'fcBuddy',l:'Finance Buddy: 3+2 Mission',c:'#e8186d'},
-  {k:'fcCanteen',l:'Financial Canteen',c:'#8b5cf6'},
+  {k:'fcWealthCheck', l:'Fun Coin Wealth Check',          c:'#6366f1', max:100},
+  {k:'fcSaving',      l:'Fun Coin Saving (ออมครบ 20%)',   c:'#059669', max:14500},
+  {k:'fcActivity',    l:'Fun Coin Activity (กิจกรรม)',    c:'#0ea5e9', max:null},
+  {k:'fcQuestion',    l:'Fun Coin Q&A',                   c:'#f59e0b', max:600},
+  {k:'fcBuddy',       l:'Finance Buddy: 3+2 Mission',     c:'#e8186d', max:300},
+  {k:'fcCanteen',     l:'Financial Canteen',               c:'#8b5cf6', max:300},
 ];
 
 let allData = [], hlId = '';
@@ -676,17 +676,42 @@ function renderDetail(emp) {
 
   // fun coin
   document.getElementById('fcTot').textContent = emp.sumFunCoin.toLocaleString();
-  const maxC = Math.max(...FC_ITEMS.map(f => emp[f.k] || 0), 1);
-  document.getElementById('fcList').innerHTML = FC_ITEMS.map(f => `
-    <div class="fc-row">
+  const maxFcFallback = Math.max(...FC_ITEMS.map(f => emp[f.k] || 0), 1);
+  document.getElementById('fcList').innerHTML = FC_ITEMS.map(f => {
+    const val = emp[f.k] || 0;
+    const maxVal = f.max !== null ? f.max : Math.max(maxFcFallback, val, 1);
+    const barPct = Math.min(Math.round(val / maxVal * 100), 100);
+    return `<div class="fc-row">
       <div class="fc-dot" style="background:${f.c}"></div>
       <div class="fc-lbl">${f.l}</div>
-      <div class="fc-bw"><div class="fc-bf" style="width:${Math.round((emp[f.k]||0)/maxC*100)}%;background:${f.c}"></div></div>
-      <div class="fc-v" style="color:${f.c}">${(emp[f.k]||0).toLocaleString()}</div>
-    </div>`).join('');
-  document.getElementById('fcNote').innerHTML = emp.savPct >= 20
-    ? '<div class="fc-note" style="background:var(--green-lt);color:#065f46">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving เพิ่ม!</div>'
-    : '<div class="fc-note" style="background:var(--red-lt);color:#991b1b">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving</div>';
+      <div class="fc-bw"><div class="fc-bf" style="width:${barPct}%;background:${f.c}"></div></div>
+      <div class="fc-v" style="color:${f.c}">${val.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('fcNote').innerHTML = realSavPct >= 20
+    ? '<div class="fc-note" style="background:var(--green-lt);color:#065f46">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving 14,500 เหรียญ!</div>'
+    : realSavPct >= 10
+    ? '<div class="fc-note" style="background:var(--yellow-lt);color:#92400e">⚡ ออม 10-19% แล้ว — ได้รับ Fun Coin Saving 4,850 เหรียญ</div>'
+    : '<div class="fc-note" style="background:var(--red-lt);color:#991b1b">⚠ ออมให้ครบ 10% เพื่อเริ่มรับ Fun Coin Saving</div>';
+
+  document.getElementById('fcNote').innerHTML += `
+    <div style="margin-top:10px;background:var(--bg);border-radius:10px;padding:12px 14px;font-size:12px;color:var(--muted);border:1px solid var(--border)">
+      <div style="font-weight:600;color:var(--text);margin-bottom:8px">📋 เงื่อนไข Fun Coin Saving</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:9px;height:9px;border-radius:50%;background:#dc2626;flex-shrink:0"></div>
+          <span>ออม <strong style="color:#991b1b">ต่ำกว่า 10%</strong> → ยังไม่ได้รับ Fun Coin Saving</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:9px;height:9px;border-radius:50%;background:#f59e0b;flex-shrink:0"></div>
+          <span>ออม <strong style="color:#92400e">10–19%</strong> ของเงินเดือน → ได้รับ <strong style="color:#92400e">4,850 Fun Coin</strong></span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:9px;height:9px;border-radius:50%;background:#059669;flex-shrink:0"></div>
+          <span>ออม <strong style="color:#065f46">20% ขึ้นไป</strong> ของเงินเดือน → ได้รับ <strong style="color:#065f46">14,500 Fun Coin</strong></span>
+        </div>
+      </div>
+    </div>`;
 }
 
 function showPage(id) {
