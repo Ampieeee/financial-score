@@ -91,11 +91,11 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
 
 /* PROGRESS */
 .prog-wrap{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap}
-.circ{position:relative;width:110px;height:110px;flex-shrink:0}
+.circ{position:relative;width:130px;height:130px;flex-shrink:0}
 .circ svg{transform:rotate(-90deg)}
-.circ-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.circ-pct{font-size:22px;font-weight:700;line-height:1.1}
-.circ-lbl{font-size:11px;color:var(--muted);margin-top:4px}
+.circ-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px}
+.circ-pct{font-size:20px;font-weight:700;line-height:1.2;text-align:center;word-break:break-all}
+.circ-lbl{font-size:11px;color:var(--muted);margin-top:4px;text-align:center}
 .prog-d{flex:1;min-width:180px}
 .pd-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px}
 .pd-row span{color:var(--muted)}.pd-row strong{color:var(--text);font-weight:600}
@@ -148,12 +148,12 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
 .fc-tot-l{color:rgba(255,255,255,.6);font-size:11px;margin-top:1px}
 .fc-body{padding:1.1rem 1.5rem}
 .fc-list{display:flex;flex-direction:column;gap:9px}
-.fc-row{display:flex;align-items:center;gap:10px}
-.fc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.fc-lbl{flex:1;font-size:12px;color:var(--text);min-width:0}
-.fc-bw{width:120px;height:5px;background:var(--border);border-radius:99px;overflow:hidden;flex-shrink:0}
+.fc-row{display:grid;grid-template-columns:14px 1fr 120px 56px;align-items:center;gap:10px}
+.fc-dot{width:8px;height:8px;border-radius:50%;justify-self:center}
+.fc-lbl{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fc-bw{height:5px;background:var(--border);border-radius:99px;overflow:hidden}
 .fc-bf{height:100%;border-radius:99px}
-.fc-v{font-size:13px;font-weight:700;width:52px;text-align:right;flex-shrink:0}
+.fc-v{font-size:13px;font-weight:700;text-align:right}
 .fc-note{margin-top:11px;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:6px}
 
 /* SUBMIT */
@@ -258,9 +258,9 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
         <div class="sec-lbl">ความคืบหน้าการออม</div>
         <div class="prog-wrap">
           <div class="circ">
-            <svg width="110" height="110" viewBox="0 0 110 110">
-              <circle cx="55" cy="55" r="44" fill="none" stroke="var(--border)" stroke-width="9"/>
-              <circle id="circArc" cx="55" cy="55" r="44" fill="none" stroke-width="9" stroke-linecap="round" stroke-dasharray="277" stroke-dashoffset="277"/>
+            <svg width="130" height="130" viewBox="0 0 130 130">
+              <circle cx="65" cy="65" r="54" fill="none" stroke="var(--border)" stroke-width="9"/>
+              <circle id="circArc" cx="65" cy="65" r="54" fill="none" stroke-width="9" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="339"/>
             </svg>
             <div class="circ-in">
               <div class="circ-pct" id="circPct">0%</div>
@@ -590,7 +590,7 @@ function renderDetail(emp) {
 
   // วงกลม
   const arc = document.getElementById('circArc');
-  arc.setAttribute('stroke-dashoffset', Math.round(277 - (277 * pct20Circle / 100)));
+  arc.setAttribute('stroke-dashoffset', Math.round(339 - (339 * pct20Circle / 100)));
   arc.setAttribute('stroke', col20);
   document.getElementById('circPct').textContent = realSavPct.toFixed(2) + '%';
   document.getElementById('circPct').style.color = col20;
