@@ -569,29 +569,36 @@ function renderDetail(emp) {
   b.textContent = status;
   b.className = 'pbadge ' + (status==='บรรลุเป้าหมาย'?'b-reach':status==='กำลังดี'?'b-ok':'b-low');
 
-  // circle progress
-  const pct = Math.min(emp.savPct, 100);
-  const col = emp.savPct >= 100 ? '#059669' : emp.savPct >= emp.goalPct ? '#f59e0b' : '#e8186d';
+  // คำนวณ % การออมจริง = totalSav / (เงินเดือน × 12) × 100
+  const annualSalary = emp.salary * 12;
+  const realSavPct = annualSalary > 0 ? Math.round(emp.totalSav / annualSalary * 1000) / 10 : emp.savPct;
+
+  // เป้า Fun Coin 20%
+  const goal20Amt = Math.round(annualSalary * 20 / 100);
+  const need20 = Math.max(0, goal20Amt - emp.totalSav);
+  const pct20 = Math.min(realSavPct, 100);
+  const col20 = realSavPct >= 100 ? '#059669' : realSavPct >= 20 ? '#f59e0b' : '#e8186d';
+
+  // circle
   const arc = document.getElementById('circArc');
-  arc.setAttribute('stroke-dashoffset', Math.round(226 - (226 * pct / 100)));
-  arc.setAttribute('stroke', col);
-  document.getElementById('circPct').textContent = emp.savPct.toFixed(1) + '%';
-  document.getElementById('circPct').style.color = col;
+  arc.setAttribute('stroke-dashoffset', Math.round(226 - (226 * pct20 / 100)));
+  arc.setAttribute('stroke', col20);
+  document.getElementById('circPct').textContent = realSavPct.toFixed(1) + '%';
+  document.getElementById('circPct').style.color = col20;
 
   document.getElementById('pd1').textContent = (emp.pvd || 0).toLocaleString() + ' บาท';
   document.getElementById('pd2').textContent = (emp.coop || 0).toLocaleString() + ' บาท';
   document.getElementById('pd3').textContent = (emp.extra || 0).toLocaleString() + ' บาท';
   document.getElementById('pd4').textContent = emp.totalSav.toLocaleString() + ' บาท';
-  document.getElementById('pd5').textContent = emp.goalAmt.toLocaleString() + ' บาท';
+  document.getElementById('pd5').textContent = goal20Amt.toLocaleString() + ' บาท';
 
   const bf = document.getElementById('barFill');
-  bf.style.width = Math.min(100, Math.round(emp.savPct)) + '%';
-  bf.className = 'bar-fill ' + (emp.savPct >= 100 ? 'bar-reach' : emp.savPct >= emp.goalPct ? 'bar-ok' : 'bar-low');
+  bf.style.width = Math.min(100, Math.round(realSavPct)) + '%';
+  bf.className = 'bar-fill ' + (realSavPct >= 100 ? 'bar-reach' : realSavPct >= 20 ? 'bar-ok' : 'bar-low');
 
-  const need = Math.max(0, emp.goalAmt - emp.totalSav);
-  document.getElementById('barLeft').textContent = need > 0 ? 'ยังขาดอีก ' + need.toLocaleString() + ' บาท' : 'บรรลุเป้าหมายแล้ว!';
-  document.getElementById('barTarget').textContent = `เป้าหมาย 20%`;
-  document.getElementById('savNote').innerHTML = emp.savPct >= 20
+  document.getElementById('barLeft').textContent = need20 > 0 ? 'ยังขาดอีก ' + need20.toLocaleString() + ' บาท' : 'บรรลุเป้าหมายแล้ว!';
+  document.getElementById('barTarget').textContent = 'เป้าหมาย 20%';
+  document.getElementById('savNote').innerHTML = realSavPct >= 20
     ? '<div class="hint hint-g">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving!</div>'
     : '<div class="hint hint-r">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving</div>';
 
@@ -604,16 +611,16 @@ function renderDetail(emp) {
 
   // เป้าหมายส่วนตัวของพนักงาน
   const personalGoal = document.getElementById('personalGoalNote');
-  if (emp.goalPct && emp.goalPct > 0) {
-    const personalGoalAmt = Math.round(emp.salary * 12 * emp.goalPct / 100);
-    const personalNeed = Math.max(0, personalGoalAmt - emp.totalSav);
-    const personalPct = personalGoalAmt > 0 ? Math.min(Math.round(emp.totalSav / personalGoalAmt * 100), 100) : 0;
+  if (emp.goalPct && emp.goalPct > 0 && annualSalary > 0) {
+    const personalGoalAnnual = Math.round(annualSalary * emp.goalPct / 100);
+    const personalNeed = Math.max(0, personalGoalAnnual - emp.totalSav);
+    const personalPct = Math.min(Math.round(emp.totalSav / personalGoalAnnual * 1000) / 10, 100);
     personalGoal.innerHTML = `
       <div style="background:var(--blue-lt);border:1px solid rgba(37,99,235,.2);border-radius:10px;padding:12px 14px">
         <div style="font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">เป้าหมายที่คุณตั้งไว้ ${emp.goalPct}% ของรายได้</div>
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
           <span style="color:var(--muted)">เป้าหมายปีนี้</span>
-          <strong>${personalGoalAmt.toLocaleString()} บาท</strong>
+          <strong>${personalGoalAnnual.toLocaleString()} บาท</strong>
         </div>
         <div style="height:5px;background:rgba(37,99,235,.15);border-radius:99px;overflow:hidden;margin-bottom:5px">
           <div style="height:100%;width:${personalPct}%;background:var(--blue);border-radius:99px;transition:width .8s"></div>
@@ -625,16 +632,16 @@ function renderDetail(emp) {
       </div>`;
   } else personalGoal.innerHTML = '';
 
-  // แผนออมเงิน
+  // แผนออมเงิน (เทียบกับเป้า 20%)
   const savingPlan = document.getElementById('savingPlanNote');
-  if (emp.salary > 0 && need > 0) {
+  if (need20 > 0) {
     const daysLeft = Math.max(1, Math.floor((new Date('2027-01-01') - new Date()) / 86400000));
-    const dailySav = Math.ceil(need / daysLeft);
-    const monthlySav = Math.ceil(need / Math.max(1, daysLeft / 30));
+    const dailySav = Math.ceil(need20 / daysLeft);
+    const monthlySav = Math.ceil(need20 / Math.max(1, daysLeft / 30));
     savingPlan.innerHTML = `<div style="background:var(--yellow-lt);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:12px 14px;font-size:12px;color:#92400e;display:flex;gap:16px;flex-wrap:wrap;margin-top:.5rem">
       <div>ออมเฉลี่ย <strong>${dailySav.toLocaleString()} บาท/วัน</strong></div>
       <div>หรือ <strong>${monthlySav.toLocaleString()} บาท/เดือน</strong></div>
-      <div>จะบรรลุเป้าภายใน ${daysLeft.toLocaleString()} วัน</div>
+      <div>จะบรรลุเป้า 20% ภายใน ${daysLeft.toLocaleString()} วัน</div>
     </div>`;
   } else savingPlan.innerHTML = '';
 
