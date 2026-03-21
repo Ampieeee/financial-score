@@ -604,29 +604,6 @@ function renderDetail(emp) {
     ? '<div class="hint hint-g">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving!</div>'
     : '<div class="hint hint-r">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving (ขาดอีก ' + Math.round(need20).toLocaleString() + ' บาท)</div>';
 
-  // circle — แสดง % จริง วงกลมเทียบกับเป้า 20%
-  const arc = document.getElementById('circArc');
-  arc.setAttribute('stroke-dashoffset', Math.round(226 - (226 * pct20Circle / 100)));
-  arc.setAttribute('stroke', col20);
-  document.getElementById('circPct').textContent = realSavPct.toFixed(2) + '%';
-  document.getElementById('circPct').style.color = col20;
-
-  document.getElementById('pd1').textContent = (emp.pvd || 0).toLocaleString() + ' บาท';
-  document.getElementById('pd2').textContent = (emp.coop || 0).toLocaleString() + ' บาท';
-  document.getElementById('pd3').textContent = (emp.extra || 0).toLocaleString() + ' บาท';
-  document.getElementById('pd4').textContent = emp.totalSav.toLocaleString() + ' บาท';
-  document.getElementById('pd5').textContent = goal20Amt.toLocaleString() + ' บาท';
-
-  const bf = document.getElementById('barFill');
-  bf.style.width = Math.min(100, Math.round(pct20Circle)) + '%';
-  bf.className = 'bar-fill ' + (realSavPct >= 20 ? 'bar-reach' : realSavPct >= 10 ? 'bar-ok' : 'bar-low');
-
-  document.getElementById('barLeft').textContent = need20 > 0 ? 'ยังขาดอีก ' + need20.toLocaleString() + ' บาท' : 'บรรลุเป้าหมายแล้ว!';
-  document.getElementById('barTarget').textContent = 'เป้าหมาย 20%';
-  document.getElementById('savNote').innerHTML = realSavPct >= 20
-    ? '<div class="hint hint-g">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving!</div>'
-    : '<div class="hint hint-r">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving</div>';
-
   // saving grid
   document.getElementById('savGrid').innerHTML = `
     <div class="si pvd"><div class="si-lbl">PVD</div><div class="si-val">${(emp.pvd||0).toLocaleString()}</div><div class="si-unit">บาท</div></div>
