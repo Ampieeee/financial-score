@@ -460,12 +460,22 @@ async function loadFromSheets() {
     try {
       const dateVal = configRows[0]?.[1];
       if (dateVal) {
-        const d = new Date(dateVal);
-        const formatted = isNaN(d)
-          ? String(dateVal)
-          : d.toLocaleDateString('th-TH', {day:'numeric', month:'short', year:'numeric'});
-        const el = document.getElementById('lastUpdated');
-        if (el) el.textContent = formatted;
+        let d;
+        // Google Sheets ส่งมาเป็น Date object หรือ string "Date(yyyy,m,d)"
+        if (dateVal instanceof Date) {
+          d = dateVal;
+        } else if (typeof dateVal === 'string' && dateVal.startsWith('Date(')) {
+          const parts = dateVal.replace('Date(','').replace(')','').split(',');
+          d = new Date(+parts[0], +parts[1], +parts[2]);
+        } else {
+          d = new Date(dateVal);
+        }
+        if (!isNaN(d)) {
+          const thMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+          const formatted = `${d.getDate()} ${thMonths[d.getMonth()]} ${d.getFullYear()}`;
+          const el = document.getElementById('lastUpdated');
+          if (el) el.textContent = formatted;
+        }
       }
     } catch(e) {}
 
