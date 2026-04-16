@@ -345,7 +345,7 @@ body{font-family:'Prompt',sans-serif;background:var(--bg);color:var(--text);min-
 
 <script>
 // ══════════════════════════════════════
-// CONFIG — เปลี่ยนตรงนี้เมื่อเชื่อม Google Sheets จริง
+// CONFIG
 // ══════════════════════════════════════
 const SHEET_ID = "1nQWywUAUTUG4akojNskHztzbGojstAt8E5yqtJWrgUI";
 const SHEET_NAME_MAIN = "ข้อมูลการออมทั้งหมด";
@@ -354,35 +354,37 @@ const SHEET_NAME_CONFIG = "config";
 
 // ── คอลัมน์ใน ข้อมูลการออมทั้งหมด (0-indexed) ──
 const COL = {
-  empCode: 0,    // A รหัสพนักงาน
-  name: 1,       // B ชื่อ สกุล
-  idCard: 2,     // C รหัสบัตรประชาชน
-  salary: 3,     // D Salary
-  pvd: 4,        // E กองทุนสำรองเลี้ยงชีพ
-  coop: 5,       // F สหกรณ์
-  extra: 6,      // G ออมเพิ่มเติม
-  totalSav: 7,   // H รวมเงินออม
-  goalAmt: 8,    // I เป้าหมายเงินออม
-  goalPct: 10,   // K เป้าหมายออม %
-  savPct: 11,    // L % การออม
-  sumFunCoin: 12,// M Sum Fun Coin
+  empCode: 0,      // A รหัสพนักงาน
+  name: 1,         // B ชื่อ สกุล
+  idCard: 2,       // C รหัสบัตรประชาชน
+  salary: 3,       // D Salary
+  pvd: 4,          // E กองทุนสำรองเลี้ยงชีพ
+  coop: 5,         // F สหกรณ์
+  extra: 6,        // G ออมเพิ่มเติม
+  totalSav: 7,     // H รวมเงินออม
+  goalAmt: 8,      // I เป้าหมายเงินออม
+  goalPct: 10,     // K เป้าหมายออม %
+  savPct: 11,      // L % การออม
+  sumFunCoin: 12,  // M Sum Fun Coin
   fcWealthCheck: 13, // N Fun Coin wealth check
-  fcSaving: 14,  // O Fun Coin Saving
-  fcActivity: 15,// P Fun Coin Activity
-  fcQuestion: 16,// Q Fun Coin Question
-  fcBuddy: 17,   // R Buddy
-  fcCanteen: 18, // S Financial canteen
-  countdown: 19, // T Countdown
-  goalTarget: 20,// U เป้าหมายการออม
-  risk: 21,      // V Risk (จาก ผู้เข้าร่วม)
-  dept: 31,      // AF dept
+  fcSaving: 14,    // O Fun Coin Saving
+  fcActivity: 15,  // P Fun Coin Activity
+  fcQuestion: 16,  // Q Fun Coin Question
+  fcBuddy: 17,     // R Buddy
+  fcCanteen: 18,   // S Financial canteen
+  fcMoneyTalk: 19,       // T Money Talk
+  fcMoneyClassroom: 20,  // U Money Classroom ← ใหม่
+  countdown: 21,         // V Countdown
+  goalTarget: 22,        // W เป้าหมายการออม
+  risk: 23,              // X Risk
+  dept: 33,              // AH dept
 };
 
 // ── คอลัมน์ใน ผู้เข้าร่วม (Microsoft form) (0-indexed) ──
 const HCOL = {
-  empCode: 0,    // ชีทใหม่ Col A (รหัสพนักงาน) → index 0
-  score: 19,     // ชีทใหม่ Col T (Total Point) → index 19
-  risk: 20,      // ชีทใหม่ Col U (RiskLevel) → index 20
+  empCode: 0,
+  score: 19,
+  risk: 20,
 };
 
 const RISK_MAP = {
@@ -416,6 +418,7 @@ const RECS = {
   ],
 };
 
+// ── FC_ITEMS: เพิ่ม Money Talk ที่ index 6 ──
 const FC_ITEMS = [
   {k:'fcWealthCheck', l:'Fun Coin Wealth Check',          c:'#6366f1', max:100},
   {k:'fcSaving',      l:'Fun Coin Saving (ออมครบ 20%)',   c:'#059669', max:14500},
@@ -423,6 +426,8 @@ const FC_ITEMS = [
   {k:'fcQuestion',    l:'Fun Coin Q&A',                   c:'#f59e0b', max:600},
   {k:'fcBuddy',       l:'Finance Buddy: 3+2 Mission',     c:'#e8186d', max:300},
   {k:'fcCanteen',     l:'Financial Canteen',               c:'#8b5cf6', max:300},
+  {k:'fcMoneyTalk',      l:'Money Talk',          c:'#14b8a6', max:null},
+  {k:'fcMoneyClassroom', l:'Money Classroom',      c:'#f97316', max:null}, // ← ใหม่
 ];
 
 let allData = [], hlId = '';
@@ -439,10 +444,7 @@ function setLastUpdated() {
 }
 
 async function loadFromSheets() {
-  if (SHEET_ID === "YOUR_GOOGLE_SHEET_ID_HERE") {
-    loadSample();
-    return;
-  }
+  if (SHEET_ID === "YOUR_GOOGLE_SHEET_ID_HERE") { loadSample(); return; }
   try {
     document.getElementById('loadSpinner').style.display = 'block';
     document.getElementById('noDataContent').style.opacity = '.4';
@@ -456,20 +458,15 @@ async function loadFromSheets() {
     const healthRows = parseGviz(r2);
     const configRows = parseGviz(r3);
 
-    // ดึงวันที่อัปเดตจาก config sheet B1
     try {
       const dateVal = configRows[0]?.[1];
       if (dateVal) {
         let d;
-        // Google Sheets ส่งมาเป็น Date object หรือ string "Date(yyyy,m,d)"
-        if (dateVal instanceof Date) {
-          d = dateVal;
-        } else if (typeof dateVal === 'string' && dateVal.startsWith('Date(')) {
+        if (dateVal instanceof Date) { d = dateVal; }
+        else if (typeof dateVal === 'string' && dateVal.startsWith('Date(')) {
           const parts = dateVal.replace('Date(','').replace(')','').split(',');
           d = new Date(+parts[0], +parts[1], +parts[2]);
-        } else {
-          d = new Date(dateVal);
-        }
+        } else { d = new Date(dateVal); }
         if (!isNaN(d)) {
           const thMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
           const formatted = `${d.getDate()} ${thMonths[d.getMonth()]} ${d.getFullYear()}`;
@@ -525,6 +522,8 @@ function buildData(mainRows, healthRows) {
       fcQuestion: parseFloat(r[COL.fcQuestion]) || 0,
       fcBuddy: parseFloat(r[COL.fcBuddy]) || 0,
       fcCanteen: parseFloat(r[COL.fcCanteen]) || 0,
+      fcMoneyTalk: parseFloat(r[COL.fcMoneyTalk]) || 0,
+      fcMoneyClassroom: parseFloat(r[COL.fcMoneyClassroom]) || 0, // ← ใหม่
       dept: r[COL.dept] || '',
       healthScore: h.score,
       riskSummary: h.risk || null,
@@ -535,28 +534,33 @@ function buildData(mainRows, healthRows) {
   initDash();
 }
 
-// ══ SAMPLE DATA (เหมือนโครงสร้างจริง) ══
+// ══ SAMPLE DATA ══
 function loadSample() {
   allData = [
     {empCode:'16647',name:'กัญชุดา เลิศภักดีบวร',idCard:'1103700123456',salary:81756,
      pvd:2271,coop:1400,extra:0,totalSav:7342,goalAmt:196214,savPct:3.7,goalPct:20,
-     sumFunCoin:450,fcWealthCheck:100,fcSaving:0,fcActivity:0,fcQuestion:50,fcBuddy:300,fcCanteen:0,
+     sumFunCoin:550,fcWealthCheck:100,fcSaving:0,fcActivity:0,fcQuestion:50,fcBuddy:300,fcCanteen:0,
+     fcMoneyTalk:100,fcMoneyClassroom:50,
      dept:'SKCN (นวนคร)',healthScore:75,riskSummary:'ดี'},
     {empCode:'16448',name:'สมชาย ใจดี',idCard:'1103700234567',salary:65000,
      pvd:1500,coop:1200,extra:30000,totalSav:35400,goalAmt:156000,savPct:22.6,goalPct:20,
-     sumFunCoin:900,fcWealthCheck:100,fcSaving:4850,fcActivity:400,fcQuestion:50,fcBuddy:300,fcCanteen:100,
+     sumFunCoin:1000,fcWealthCheck:100,fcSaving:4850,fcActivity:400,fcQuestion:50,fcBuddy:300,fcCanteen:100,
+     fcMoneyTalk:200,fcMoneyClassroom:100,
      dept:'SKCN (นวนคร)',healthScore:65,riskSummary:'ดี'},
     {empCode:'15840',name:'มานะ พัฒนา',idCard:'1103700345678',salary:72000,
      pvd:1800,coop:1500,extra:180000,totalSav:186600,goalAmt:172800,savPct:107.8,goalPct:20,
-     sumFunCoin:9150,fcWealthCheck:100,fcSaving:14500,fcActivity:2500,fcQuestion:50,fcBuddy:300,fcCanteen:100,
+     sumFunCoin:9350,fcWealthCheck:100,fcSaving:14500,fcActivity:2500,fcQuestion:50,fcBuddy:300,fcCanteen:100,
+     fcMoneyTalk:200,fcMoneyClassroom:200,
      dept:'IT',healthScore:87,riskSummary:'ดีมาก'},
     {empCode:'16517',name:'วิไล สุขใจ',idCard:'1103700456789',salary:58000,
      pvd:1300,coop:1100,extra:40000,totalSav:44800,goalAmt:139200,savPct:32.2,goalPct:20,
-     sumFunCoin:6700,fcWealthCheck:100,fcSaving:4850,fcActivity:1500,fcQuestion:50,fcBuddy:300,fcCanteen:100,
+     sumFunCoin:6800,fcWealthCheck:100,fcSaving:4850,fcActivity:1500,fcQuestion:50,fcBuddy:300,fcCanteen:100,
+     fcMoneyTalk:100,fcMoneyClassroom:0,
      dept:'Marketing',healthScore:58,riskSummary:'ปานกลาง'},
     {empCode:'15355',name:'ประสิทธิ์ มั่นคง',idCard:'1103700567890',salary:54000,
      pvd:1100,coop:900,extra:5000,totalSav:9000,goalAmt:129600,savPct:6.9,goalPct:20,
      sumFunCoin:550,fcWealthCheck:100,fcSaving:0,fcActivity:0,fcQuestion:50,fcBuddy:300,fcCanteen:100,
+     fcMoneyTalk:0,fcMoneyClassroom:0,
      dept:'Operations',healthScore:30,riskSummary:'เสี่ยง'},
   ];
   initDash();
@@ -603,7 +607,6 @@ function doSearch() {
 function renderDetail(emp) {
   const ini = emp.name.trim().split(' ');
   document.getElementById('navTitle').textContent = emp.name;
-  // สุ่มสีตามชื่อ — แต่ละคนได้สีไม่ซ้ำกัน
   const AVATAR_COLORS = [
     '#e8186d','#7c3aed','#2563eb','#059669','#d97706',
     '#dc2626','#0891b2','#65a30d','#9333ea','#ea580c',
@@ -621,17 +624,13 @@ function renderDetail(emp) {
   b.textContent = status;
   b.className = 'pbadge ' + (status==='บรรลุเป้าหมาย'?'b-reach':status==='กำลังดี'?'b-ok':'b-low');
 
-  // วงกลม % = totalSav / salary × 100 (รายเดือน)
   const annualSalary = emp.salary * 12;
   const realSavPct = emp.salary > 0 ? Math.round(emp.totalSav / emp.salary * 10000) / 100 : 0;
-
-  // Fun Coin 20% — ยึดจากวงกลม % เทียบกับเงินเดือนรายเดือน
-  const goal20Monthly = emp.salary * 20 / 100; // 20% ของเงินเดือนเดือนเดียว
+  const goal20Monthly = emp.salary * 20 / 100;
   const need20 = Math.max(0, goal20Monthly - emp.totalSav);
   const pct20Circle = Math.min(realSavPct / 20 * 100, 100);
   const col20 = realSavPct >= 20 ? '#059669' : realSavPct >= 10 ? '#f59e0b' : '#e8186d';
 
-  // วงกลม
   const arc = document.getElementById('circArc');
   arc.setAttribute('stroke-dashoffset', Math.round(264 - (264 * pct20Circle / 100)));
   arc.setAttribute('stroke', col20);
@@ -656,14 +655,12 @@ function renderDetail(emp) {
     ? '<div class="hint hint-g">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving!</div>'
     : '<div class="hint hint-r">⚠ ออมให้ครบ 20% เพื่อรับ Fun Coin Saving (ขาดอีก ' + Math.round(need20).toLocaleString() + ' บาท)</div>';
 
-  // saving grid
   document.getElementById('savGrid').innerHTML = `
     <div class="si pvd"><div class="si-lbl">PVD</div><div class="si-val">${(emp.pvd||0).toLocaleString()}</div><div class="si-unit">บาท</div></div>
     <div class="si coop"><div class="si-lbl">สหกรณ์</div><div class="si-val">${(emp.coop||0).toLocaleString()}</div><div class="si-unit">บาท</div></div>
     <div class="si extra"><div class="si-lbl">ออมเพิ่มเติม</div><div class="si-val">${(emp.extra||0).toLocaleString()}</div><div class="si-unit">บาท</div></div>
     <div class="si total"><div class="si-lbl">รวมออม</div><div class="si-val">${emp.totalSav.toLocaleString()}</div><div class="si-unit">บาท</div></div>`;
 
-  // เป้าหมายส่วนตัว = salary × 12 × goalPct%
   const personalGoal = document.getElementById('personalGoalNote');
   if (emp.goalPct && emp.goalPct > 0 && annualSalary > 0) {
     const personalGoalAnnual = Math.round(annualSalary * emp.goalPct / 100);
@@ -686,7 +683,6 @@ function renderDetail(emp) {
       </div>`;
   } else personalGoal.innerHTML = '';
 
-  // แผนออมเงิน (เทียบกับเป้า 20%)
   const savingPlan = document.getElementById('savingPlanNote');
   if (need20 > 0) {
     const daysLeft = Math.max(1, Math.floor((new Date('2027-01-01') - new Date()) / 86400000));
@@ -731,6 +727,7 @@ function renderDetail(emp) {
       <div class="fc-v" style="color:${f.c}">${val.toLocaleString()}</div>
     </div>`;
   }).join('');
+
   document.getElementById('fcNote').innerHTML = realSavPct >= 20
     ? '<div class="fc-note" style="background:var(--green-lt);color:#065f46">✓ ออมครบ 20% แล้ว — ได้รับ Fun Coin Saving 14,500 เหรียญ!</div>'
     : realSavPct >= 10
@@ -766,7 +763,6 @@ function goHome() { showPage('pgHome'); document.getElementById('homeInput').val
 function showErr(m) { const e = document.getElementById('errBox'); e.textContent = m; e.style.display = 'block'; }
 function hideErr() { document.getElementById('errBox').style.display = 'none'; }
 
-// โหลดข้อมูลตอนเปิดเว็บ
 loadFromSheets();
 </script>
 </body>
